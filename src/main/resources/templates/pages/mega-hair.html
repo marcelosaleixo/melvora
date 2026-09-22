@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Mega Hair')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar"><div><span class="eyebrow">MEGA HAIR</span><h1>Aplicação</h1><p>Registre a aplicação, consuma o lote e mantenha o histórico da cliente.</p></div></header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+<section class="panel"><div class="panel-heading"><div><span class="section-kicker">NOVA APLICAÇÃO</span><h2>Registrar aplicação</h2></div></div><form class="form-grid" method="post" th:action="@{/mega-hair/aplicacoes}"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><label>Cliente<select name="clienteId" required><option value="">Selecione</option><option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}"></option></select></label><label>Profissional<select name="profissionalId" required><option value="">Selecione</option><option th:each="p : ${profissionais}" th:value="${p.id}" th:text="${p.nome}"></option></select></label><label>Lote<select name="loteId" required><option value="">Selecione</option><option th:each="l : ${lotes}" th:if="${l.quantidadeDisponivel > 0}" th:value="${l.id}" th:text="${l.codigo + ' · ' + l.quantidadeDisponivel + ' disponíveis · ' + l.comprimentoCm + 'cm · ' + l.cor}"></option></select></label><label>Quantidade<input name="quantidade" type="number" min="1" required></label><label>Data<input name="dataAplicacao" type="date" required th:value="${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}"></label><label class="full">Observações<textarea name="observacoes" maxlength="2000"></textarea></label><button class="primary-button full" type="submit">Registrar aplicação</button></form></section><section class="info-grid"><div class="info-card"><span>Fluxo rastreável</span><strong>Produto → Lote → Aplicação</strong><p>O consumo é registrado com proteção de concorrência no lote.</p></div><div class="info-card"><span>Próxima etapa</span><strong>Manutenção</strong><p>Após a aplicação, registre manutenção ou remoção pelo histórico da cliente.</p></div></section>
+</main>
+</th:block>
+
+</body>
+</html>

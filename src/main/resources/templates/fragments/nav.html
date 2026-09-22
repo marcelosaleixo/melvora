@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<aside class="sidebar" th:fragment="sidebar">
+  <a class="brand" href="/dashboard"><div class="brand-mark">M</div><div><strong>Melvora</strong><span>Beauty Management</span></div></a>
+  <nav class="nav">
+    <a class="nav-link" href="/dashboard">📊 <span>Dashboard</span></a>
+    <a class="nav-link" href="/clientes" sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL','RECEPCIONISTA')">👩 <span>Clientes</span></a>
+    <a class="nav-link" href="/produtos" sec:authorize="hasRole('ADMIN')">🛍️ <span>Produtos</span></a>
+    <a class="nav-link" href="/estoque" sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL')">📦 <span>Estoque</span></a>
+    <a class="nav-link" href="/mega-hair" sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL')">💇 <span>Mega Hair</span></a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="security-badge">🔐 <span>Tenant protegido</span><br>Dados isolados por empresa.</div>
+    <form method="post" action="/logout"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><button class="logout-button">Sair</button></form>
+  </div>
+</aside>
+</body>
+</html>

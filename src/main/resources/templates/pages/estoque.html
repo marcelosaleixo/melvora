@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Estoque Mega Hair')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar"><div><span class="eyebrow">INVENTÁRIO</span><h1>Estoque Mega Hair</h1><p>Controle por lote, quantidade, peso, comprimento, fio, cor e método.</p></div></header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+<div class="module-layout"><section class="panel"><div class="panel-heading"><div><span class="section-kicker">ENTRADA</span><h2>Novo lote</h2></div></div><form class="form-grid" method="post" th:action="@{/estoque}"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><label>Produto<select name="produtoId" required><option value="">Selecione</option><option th:each="p : ${produtos}" th:value="${p.id}" th:text="${p.nome}"></option></select></label><label>Código do lote<input name="codigo" required maxlength="60" autocomplete="off"></label><label>Quantidade<input name="quantidade" type="number" min="1" max="100000" required></label><label>Peso/unidade (g)<input name="pesoPorUnidadeGramas" type="number" step="0.01" min="0.01" required></label><label>Comprimento (cm)<input name="comprimentoCm" type="number" min="1" max="300" required></label><label>Tipo de fio<select name="tipoFio" required><option value="">Selecione</option><option th:each="f : ${fios}" th:value="${f}" th:text="${f}"></option></select></label><label>Cor<input name="cor" required maxlength="80"></label><label>Método<select name="metodo" required><option value="">Selecione</option><option th:each="m : ${metodos}" th:value="${m}" th:text="${m}"></option></select></label><button class="primary-button full" type="submit">Registrar entrada</button></form></section><section class="panel"><div class="panel-heading"><div><span class="section-kicker">SALDO</span><h2>Lotes</h2></div><span class="section-note" th:text="${pagina.totalElements + ' lotes'}">0 lotes</span></div><div class="table-wrap"><table><thead><tr><th>Lote</th><th>Produto</th><th>Disponível</th><th>Peso</th><th>Características</th></tr></thead><tbody><tr th:each="l : ${pagina.content}"><td><strong th:text="${l.codigo}">Lote</strong></td><td th:text="${l.produto.nome}">Produto</td><td><strong th:text="${l.quantidadeDisponivel + ' / ' + l.quantidadeInicial}">0 / 0</strong></td><td th:text="${l.pesoPorUnidadeGramas + ' g/un.'}">0 g</td><td th:text="${l.comprimentoCm + ' cm · ' + l.tipoFio + ' · ' + l.cor + ' · ' + l.metodo}">Características</td></tr><tr th:if="${pagina.empty}"><td colspan="5" class="empty">Nenhum lote cadastrado.</td></tr></tbody></table></div><th:block th:replace="~{fragments/pagination :: pagination(${pagina}, '/estoque')}"></th:block></section></div>
+</main>
+</th:block>
+
+</body>
+</html>

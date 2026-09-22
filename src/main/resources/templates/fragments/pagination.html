@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<body>
+<nav class="pagination" th:fragment="pagination(page, baseUrl)" th:if="${page != null and page.totalPages > 1}" aria-label="Paginação">
+    <a class="pagination-link" th:classappend="${!page.hasPrevious() ? ' disabled' : ''}" th:href="${page.hasPrevious() ? baseUrl + '?page=' + (page.number - 1) : '#'}" th:attr="aria-disabled=${!page.hasPrevious()}">Anterior</a>
+    <span class="pagination-info">Página <strong th:text="${page.number + 1}">1</strong> de <strong th:text="${page.totalPages}">1</strong></span>
+    <a class="pagination-link" th:classappend="${!page.hasNext() ? ' disabled' : ''}" th:href="${page.hasNext() ? baseUrl + '?page=' + (page.number + 1) : '#'}" th:attr="aria-disabled=${!page.hasNext()}">Próxima</a>
+</nav>
+</body>
+</html>

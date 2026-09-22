@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<aside class="sidebar" th:fragment="sidebar">
+    <div class="sidebar-inner">
+        <a class="brand" th:href="@{/dashboard}" aria-label="Ir para o dashboard">
+            <span class="brand-mark" aria-hidden="true">M</span>
+            <span class="brand-copy"><strong>Melvora</strong><small>Beauty Management</small></span>
+        </a>
+
+        <nav class="nav" aria-label="Navegação principal">
+            <a class="nav-link" th:classappend="${activePage == 'dashboard' ? ' active' : ''}" th:href="@{/dashboard}"><span aria-hidden="true">📊</span><span>Dashboard</span></a>
+            <th:block sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL','RECEPCIONISTA')">
+                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).CLIENTES)}" th:classappend="${activePage == 'clientes' ? ' active' : ''}" th:href="@{/clientes}"><span aria-hidden="true">👩</span><span>Clientes</span></a>
+            </th:block>
+            <th:block sec:authorize="hasRole('ADMIN')">
+                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).PRODUTOS)}" th:classappend="${activePage == 'produtos' ? ' active' : ''}" th:href="@{/produtos}"><span aria-hidden="true">🛍️</span><span>Produtos</span></a>
+            </th:block>
+            <th:block sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL')">
+                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).ESTOQUE)}" th:classappend="${activePage == 'estoque' ? ' active' : ''}" th:href="@{/estoque}"><span aria-hidden="true">📦</span><span>Estoque</span></a>
+                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).MEGA_HAIR)}" th:classappend="${activePage == 'mega-hair' ? ' active' : ''}" th:href="@{/mega-hair}"><span aria-hidden="true">💇</span><span>Mega Hair</span></a>
+            </th:block>
+            <th:block sec:authorize="hasRole('ADMIN')">
+                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).EQUIPE)}" th:classappend="${activePage == 'usuarios' ? ' active' : ''}" th:href="@{/usuarios}"><span aria-hidden="true">👥</span><span>Equipe</span></a>
+            </th:block>
+            <a class="nav-link" th:classappend="${activePage == 'empresas' ? ' active' : ''}" th:href="@{/empresas}" sec:authorize="hasRole('SUPER_ADMIN')"><span aria-hidden="true">🏢</span><span>Empresas</span></a>
+            <a class="nav-link" th:classappend="${activePage == 'usuarios' ? ' active' : ''}" th:href="@{/super-admin/usuarios}" sec:authorize="hasRole('SUPER_ADMIN')"><span aria-hidden="true">🔐</span><span>Usuários</span></a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="security-badge" role="status"><span aria-hidden="true">🔐</span><div><strong>Tenant protegido</strong><small>Dados isolados por empresa.</small></div></div>
+            <form method="post" th:action="@{/logout}">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="logout-button" type="submit">Sair</button>
+            </form>
+        </div>
+    </div>
+</aside>
+</body>
+</html>
