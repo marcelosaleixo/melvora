@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('WhatsApp Business')}"></head>
+<body>
+<div th:replace="~{fragments/layout :: layout(~{::section})}">
+<section class="whatsapp-page">
+    <div class="page-header whatsapp-hero">
+        <div>
+            <span class="eyebrow">COMUNICAÇÃO</span>
+            <h1>WhatsApp Business</h1>
+            <p>Conecte o Melvora ao WhatsApp oficial da empresa e automatize confirmações, lembretes e mensagens.</p>
+        </div>
+        <div class="whatsapp-hero-icon" aria-hidden="true">💬</div>
+    </div>
+
+    <div th:replace="~{fragments/feedback :: messages}"></div>
+
+    <form method="post" th:action="@{/comunicacao/whatsapp-business}" th:object="${form}" class="whatsapp-config-form">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+        <section class="wa-panel">
+            <div class="wa-panel-heading">
+                <div>
+                    <span class="wa-step">01</span>
+                    <div>
+                        <h2>Escolha como o Melvora vai enviar</h2>
+                        <p>Você pode usar a Cloud API diretamente ou deixar o n8n cuidar da integração e das automações.</p>
+                    </div>
+                </div>
+                <span class="wa-status-pill" th:classappend="${configurado ? ' is-on' : ''}">
+                    <span class="wa-status-dot"></span>
+                    <span th:text="${configurado ? 'Integração configurada' : 'Aguardando configuração'}">Aguardando configuração</span>
+                </span>
+            </div>
+
+            <div class="wa-mode-grid">
+                <label class="wa-mode-card">
+                    <input type="radio" th:field="*{modoIntegracao}" value="META_CLOUD" data-wa-mode="meta">
+                    <span class="wa-mode-check">✓</span>
+                    <span class="wa-mode-icon">☁️</span>
+                    <span class="wa-mode-copy">
+                        <strong>WhatsApp Business Cloud</strong>
+                        <small>Integração direta com a API oficial da Meta.</small>
+                    </span>
+                    <span class="wa-mode-tag">Direto</span>
+                </label>
+
+                <label class="wa-mode-card wa-mode-card-featured">
+                    <input type="radio" th:field="*{modoIntegracao}" value="N8N" data-wa-mode="n8n">
+                    <span class="wa-mode-check">✓</span>
+                    <span class="wa-mode-icon">⚡</span>
+                    <span class="wa-mode-copy">
+                        <strong>n8n + WhatsApp Business</strong>
+                        <small>O Melvora dispara eventos e o n8n executa o fluxo.</small>
+                    </span>
+                    <span class="wa-mode-tag recommended">Automação</span>
+                </label>
+            </div>
+        </section>
+
+        <section class="wa-panel wa-mode-section" data-wa-section="n8n">
+            <div class="wa-panel-heading compact">
+                <div>
+                    <span class="wa-step">02</span>
+                    <div>
+                        <h2>Integração com n8n</h2>
+                        <p>Informe o webhook que recebe os eventos de envio do Melvora.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="wa-info-banner">
+                <span>⚡</span>
+                <div><strong>Arquitetura recomendada</strong><br>Melvora → n8n → WhatsApp Business Cloud. O token fica protegido no Melvora e é enviado apenas por HTTPS.</div>
+            </div>
+
+            <div class="form-grid wa-form-grid">
+                <label class="wa-field full">
+                    URL do n8n
+                    <span class="wa-input-wrap"><span>🔗</span><input th:field="*{n8nBaseUrl}" placeholder="https://n8n.seudominio.com" autocomplete="url"></span>
+                    <small>Use a URL pública HTTPS do seu n8n.</small>
+                </label>
+                <label class="wa-field">
+                    Caminho do Webhook
+                    <span class="wa-input-wrap"><span>↗</span><input th:field="*{n8nWebhookPath}" placeholder="/webhook/melvora-whatsapp" autocomplete="off"></span>
+                    <small>O workflow deve aceitar POST nesse caminho.</small>
+                </label>
+                <label class="wa-field">
+                    Token de integração
+                    <span class="wa-input-wrap"><span>🔐</span><input type="password" th:field="*{n8nToken}" placeholder="Informe um token forte" autocomplete="new-password"></span>
+                    <small>Deixe vazio para manter o token salvo.</small>
+                </label>
+            </div>
+
+            <div class="wa-callback-card" th:if="${n8nConfigurado}">
+                <div class="wa-callback-icon">↩</div>
+                <div class="wa-callback-copy">
+                    <strong>Callback de status do Melvora</strong>
+                    <p>Depois de enviar pelo WhatsApp, o n8n pode informar ENVIADA, ENTREGUE, LIDA ou ERRO neste endpoint.</p>
+                    <code th:text="${n8nCallbackUrl}">/webhooks/n8n/whatsapp/chave</code>
+                </div>
+            </div>
+        </section>
+
+        <section class="wa-panel wa-mode-section" data-wa-section="meta">
+            <div class="wa-panel-heading compact">
+                <div>
+                    <span class="wa-step">02</span>
+                    <div>
+                        <h2>WhatsApp Business Cloud</h2>
+                        <p>Use esta opção se o Melvora for falar diretamente com a Graph API da Meta.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="form-grid wa-form-grid">
+                <label class="wa-field">
+                    Phone Number ID
+                    <span class="wa-input-wrap"><span>📱</span><input th:field="*{phoneNumberId}" placeholder="Ex.: 123456789012345" autocomplete="off"></span>
+                </label>
+                <label class="wa-field">
+                    Access Token
+                    <span class="wa-input-wrap"><span>🔐</span><input type="password" th:field="*{accessToken}" placeholder="Deixe vazio para manter o token salvo" autocomplete="new-password"></span>
+                </label>
+                <label class="wa-field">
+                    Versão Graph API
+                    <span class="wa-input-wrap"><span>◈</span><input th:field="*{apiVersion}" placeholder="v23.0"></span>
+                </label>
+                <label class="wa-field">
+                    URL base da API
+                    <span class="wa-input-wrap"><span>🌐</span><input th:field="*{apiBaseUrl}" placeholder="https://graph.facebook.com"></span>
+                </label>
+            </div>
+        </section>
+
+        <section class="wa-panel wa-final-panel">
+            <div class="wa-activation">
+                <div class="wa-activation-icon">✓</div>
+                <div>
+                    <strong>Ativar envio automático</strong>
+                    <p>Quando ativado, o Melvora processa a fila de comunicações automaticamente.</p>
+                </div>
+                <label class="wa-switch">
+                    <input type="checkbox" th:field="*{ativa}">
+                    <span></span>
+                </label>
+            </div>
+            <div class="wa-actions">
+                <div class="wa-security-note"><span>🔒</span> Credenciais armazenadas com proteção AES-256-GCM.</div>
+                <button class="button primary wa-save-button" type="submit"><span>Salvar integração</span><span>→</span></button>
+            </div>
+        </section>
+    </form>
+
+    <section class="wa-panel wa-test-panel">
+        <div class="wa-test-copy">
+            <div class="wa-test-icon">✓</div>
+            <div>
+                <h2>Testar conexão</h2>
+                <p th:if="${form.modoIntegracao.name() == 'N8N'}">O Melvora enviará um evento <code>MELVORA_TESTE_CONEXAO</code> para o workflow configurado.</p>
+                <p th:unless="${form.modoIntegracao.name() == 'N8N'}">O Melvora verificará o Phone Number ID diretamente na Cloud API.</p>
+            </div>
+        </div>
+        <form method="post" th:action="@{/comunicacao/whatsapp-business/testar}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button class="button" type="submit">Testar conexão</button>
+        </form>
+    </section>
+
+    <section class="wa-panel wa-guide-panel">
+        <div class="wa-panel-heading compact">
+            <div>
+                <span class="wa-step">03</span>
+                <div>
+                    <h2>Como o fluxo n8n funciona</h2>
+                    <p>O Melvora continua sendo o sistema de negócio. O n8n fica responsável pela integração externa.</p>
+                </div>
+            </div>
+        </div>
+        <div class="wa-flow">
+            <div><span>1</span><strong>Melvora</strong><small>Agenda cria a comunicação</small></div>
+            <i>→</i>
+            <div><span>2</span><strong>n8n</strong><small>Recebe o webhook</small></div>
+            <i>→</i>
+            <div><span>3</span><strong>WhatsApp</strong><small>Envia pela API oficial</small></div>
+            <i>→</i>
+            <div><span>4</span><strong>Melvora</strong><small>Atualiza o status</small></div>
+        </div>
+        <div class="wa-guide-note">
+            <strong>Eventos enviados pelo Melvora</strong>
+            <span>MELVORA_WHATSAPP_ENVIAR</span>
+            <span>MELVORA_TESTE_CONEXAO</span>
+        </div>
+    </section>
+</section>
+</div>
+
+<script>
+(function () {
+    const radios = document.querySelectorAll('[data-wa-mode]');
+    const sections = document.querySelectorAll('[data-wa-section]');
+    function refresh() {
+        const selected = document.querySelector('[data-wa-mode]:checked');
+        const mode = selected ? selected.dataset.waMode : 'n8n';
+        sections.forEach(section => {
+            section.hidden = section.dataset.waSection !== mode;
+        });
+    }
+    radios.forEach(radio => radio.addEventListener('change', refresh));
+    refresh();
+})();
+</script>
+</body>
+</html>

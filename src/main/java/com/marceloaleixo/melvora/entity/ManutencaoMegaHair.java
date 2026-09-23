@@ -29,6 +29,10 @@ public class ManutencaoMegaHair {
     private Usuario profissional;
     @Column(name = "data_manutencao", nullable = false)
     private LocalDate dataManutencao;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "agendamento_id", foreignKey = @ForeignKey(name = "fk_manutencao_agendamento"))
+    private Agendamento agendamento;
     @Column(nullable = false, length = 30)
     private String tipo;
     @Size(max = 2000)
@@ -70,6 +74,10 @@ public class ManutencaoMegaHair {
     public LocalDate getDataManutencao() {
         return dataManutencao;
     }
+
+    public Agendamento getAgendamento() { return agendamento; }
+
+    public void vincularAgendamento(Agendamento agendamento) { this.agendamento = agendamento; }
 
     public String getTipo() {
         return tipo;

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Templates WhatsApp')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar">
+  <div><span class="eyebrow">COMUNICAÇÃO</span><h1>Templates de WhatsApp</h1><p>Padronize mensagens e mantenha a comunicação da empresa consistente.</p></div>
+</header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+
+<section class="panel">
+  <div class="panel-heading"><div><span class="section-kicker">NOVO TEMPLATE</span><h2>Criar mensagem</h2></div></div>
+  <form th:action="@{/comunicacao/templates}" th:object="${form}" method="post" class="form-grid">
+    <div class="form-field"><label for="nome">Nome</label><input id="nome" type="text" th:field="*{nome}" maxlength="100" placeholder="Ex.: Confirmação de atendimento" required><small class="field-error" th:errors="*{nome}"></small></div>
+    <div class="form-field full"><label for="mensagem">Mensagem</label><textarea id="mensagem" th:field="*{mensagem}" rows="7" maxlength="4000" placeholder="Digite a mensagem..." required></textarea><small class="field-error" th:errors="*{mensagem}"></small></div>
+    <div class="form-field full"><p class="section-note"><strong>Variáveis:</strong> {cliente}, {empresa}, {servico}, {data}, {hora}, {profissional}. Elas serão substituídas automaticamente quando usadas em um agendamento.</p></div>
+    <div class="form-actions"><button class="primary-button" type="submit">Salvar template</button><a class="secondary-button" th:href="@{/comunicacao}">Voltar</a></div>
+  </form>
+</section>
+
+<section class="panel">
+  <div class="panel-heading"><div><span class="section-kicker">TEMPLATES</span><h2>Mensagens cadastradas</h2></div></div>
+  <div class="table-wrap" th:if="${pagina != null and pagina.hasContent()}">
+    <table><thead><tr><th>Nome</th><th>Mensagem</th><th>Status</th><th>Ações</th></tr></thead>
+    <tbody><tr th:each="t : ${pagina.content}">
+      <td><strong th:text="${t.nome}">Template</strong></td>
+      <td><span th:text="${t.mensagem.length() > 100 ? t.mensagem.substring(0,100) + '…' : t.mensagem}">Mensagem</span></td>
+      <td><span class="status-badge" th:text="${t.ativo ? 'Ativo' : 'Inativo'}">Ativo</span></td>
+      <td><div class="table-actions"><a class="table-action" th:href="${'/comunicacao/templates/' + t.id + '/editar'}">Editar</a><form th:action="${'/comunicacao/templates/' + t.id + '/alternar-status'}" method="post" style="display:inline"><button class="table-action" type="submit" th:text="${t.ativo ? 'Desativar' : 'Ativar'}">Alternar</button></form></div></td>
+    </tr></tbody></table>
+  </div>
+  <div class="empty-state" th:unless="${pagina != null and pagina.hasContent()}">Nenhum template cadastrado.</div>
+  <th:block th:replace="~{fragments/pagination :: pagination(${pagina}, '/comunicacao/templates')}"></th:block>
+</section>
+</main>
+</th:block>
+</body>
+</html>

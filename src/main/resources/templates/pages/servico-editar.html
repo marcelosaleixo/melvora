@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Editar serviço')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar"><div><span class="eyebrow">SERVIÇOS</span><h1>Editar serviço</h1><p th:text="${servico.nome}">Serviço</p></div><a class="secondary-button" th:href="@{/servicos}">← Voltar</a></header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+<section class="panel narrow">
+<form class="form-grid" method="post" th:action="${'/servicos/' + servicoId + '/editar'}" th:object="${servicoForm}">
+<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+<div class="field full"><label for="nome">Nome</label><input id="nome" th:field="*{nome}" maxlength="150" required><small class="field-error" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></small></div>
+<div class="field"><label for="categoria">Categoria</label><input id="categoria" th:field="*{categoria}" maxlength="80" required></div>
+<div class="field"><label for="duracaoMinutos">Duração (minutos)</label><input id="duracaoMinutos" th:field="*{duracaoMinutos}" type="number" min="15" max="720" step="15" required></div>
+<div class="field"><label for="preco">Preço (R$)</label><input id="preco" th:field="*{preco}" type="number" min="0" step="0.01" required></div>
+<div class="field full"><label for="descricao">Descrição</label><textarea id="descricao" th:field="*{descricao}" maxlength="1000"></textarea></div>
+<div class="field full"><label for="profissionalIds">Profissionais habilitados</label><select id="profissionalIds" th:field="*{profissionalIds}" multiple size="6"><option th:each="p : ${profissionais}" th:value="${p.id}" th:text="${p.nome}"></option></select><small>Sem seleção = disponível para todos os ADMIN/PROFISSIONAL ativos da empresa.</small></div>
+<div class="form-actions"><button class="primary-button" type="submit">Salvar alterações</button></div>
+</form>
+</section>
+</main>
+</th:block>
+</body>
+</html>

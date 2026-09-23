@@ -15,6 +15,7 @@ public final class MegaHairRequests {
     public record AplicarRequest(
             @NotNull Long clienteId,
             @NotNull Long profissionalId,
+            Long agendamentoId,
             @NotNull @PastOrPresent LocalDate dataAplicacao,
             @Size(max = 2000) String observacoes,
             @NotEmpty @Size(max = 20) List<@Valid ItemLoteRequest> lotes) {}
@@ -22,15 +23,17 @@ public final class MegaHairRequests {
     public record ItemLoteRequest(@NotNull Long loteId, @NotNull @Min(1) @Max(10000) Integer quantidade) {}
 
     public record ManutencaoRequest(
+            Long agendamentoId,
             @NotNull @PastOrPresent LocalDate dataManutencao,
             @NotBlank @Pattern(regexp = "REAPLICACAO|REMOCAO|MANUTENCAO") String tipo,
             @Size(max = 2000) String observacoes) {}
 
     public record AplicacaoResponse(Long id, Long clienteId, String cliente, Long profissionalId, String profissional,
-                                    LocalDate dataAplicacao, String observacoes, List<ItemResponse> lotes) {
+                                    Long agendamentoId, LocalDate dataAplicacao, String observacoes, List<ItemResponse> lotes) {
         public static AplicacaoResponse from(AplicacaoMegaHair a) {
             return new AplicacaoResponse(a.getId(), a.getCliente().getId(), a.getCliente().getNome(), a.getProfissional().getId(),
-                    a.getProfissional().getNome(), a.getDataAplicacao(), a.getObservacoes(), a.getLotes().stream().map(ItemResponse::from).toList());
+                    a.getProfissional().getNome(), a.getAgendamento() == null ? null : a.getAgendamento().getId(),
+                    a.getDataAplicacao(), a.getObservacoes(), a.getLotes().stream().map(ItemResponse::from).toList());
         }
     }
 
@@ -42,12 +45,33 @@ public final class MegaHairRequests {
     }
 
     public record ManutencaoResponse(Long id, Long aplicacaoId, Long clienteId, String cliente, Long profissionalId,
-                                     String profissional, LocalDate dataManutencao, String tipo, String observacoes) {
+                                     String profissional, Long agendamentoId, LocalDate dataManutencao, String tipo, String observacoes) {
         public static ManutencaoResponse from(ManutencaoMegaHair m) {
             return new ManutencaoResponse(m.getId(), m.getAplicacao().getId(), m.getCliente().getId(), m.getCliente().getNome(),
-                    m.getProfissional().getId(), m.getProfissional().getNome(), m.getDataManutencao(), m.getTipo(), m.getObservacoes());
+                    m.getProfissional().getId(), m.getProfissional().getNome(), m.getAgendamento() == null ? null : m.getAgendamento().getId(),
+                    m.getDataManutencao(), m.getTipo(), m.getObservacoes());
         }
     }
 
-    public record HistoricoResponse(List<AplicacaoResponse> aplicacoes, List<ManutencaoResponse> manutencoes) {}
+    public record HistoricoResponse(
+            List<AplicacaoResponse> aplicacoes,
+            List<ManutencaoResponse> manutencoes,
+            List<TimelineItem> timeline,
+            ResumoHistorico resumo) {}
+
+    public record TimelineItem(
+            LocalDate data,
+            String tipo,
+            String titulo,
+            String descricao,
+            String profissional,
+            Long referenciaId) {}
+
+    public record ResumoHistorico(
+            String statusAtual,
+            String statusDescricao,
+            LocalDate ultimaAplicacao,
+            LocalDate ultimaManutencao,
+            long totalAplicacoes,
+            long totalManutencoes) {}
 }

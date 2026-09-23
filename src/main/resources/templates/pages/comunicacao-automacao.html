@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Automação de Comunicação')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar"><div><span class="eyebrow">FASE 24</span><h1>Automação de comunicação</h1><p>O Melvora prepara automaticamente a fila de confirmações, lembretes e pós-atendimento.</p></div></header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+<section class="panel">
+<div class="panel-heading"><div><span class="section-kicker">REGRAS</span><h2>Configuração dos disparos</h2><p class="section-note">O Melvora cria a fila e pode enviar as mensagens pela integração oficial configurada em WhatsApp Business.</p></div></div>
+<form method="post" th:action="@{/comunicacao/automacao}" th:object="${form}" class="form-grid">
+<div class="form-section"><h3>Confirmação</h3><label><input type="checkbox" th:field="*{confirmacaoAtiva}"> Ativar confirmação automática</label><label>Minutos antes<input type="number" min="15" max="10080" th:field="*{confirmacaoMinutosAntes}"></label></div>
+<div class="form-section"><h3>Lembrete</h3><label><input type="checkbox" th:field="*{lembreteAtivo}"> Ativar lembrete automático</label><label>Minutos antes<input type="number" min="15" max="10080" th:field="*{lembreteMinutosAntes}"></label></div>
+<div class="form-section"><h3>Pós-atendimento</h3><label><input type="checkbox" th:field="*{posAtendimentoAtivo}"> Ativar mensagem pós-atendimento</label><label>Minutos depois<input type="number" min="0" max="10080" th:field="*{posAtendimentoMinutosDepois}"></label></div>
+<div><button class="primary-button" type="submit">Salvar automação</button></div>
+</form>
+</section>
+<section class="panel"><div class="panel-heading"><div><span class="section-kicker">FILA</span><h2>Comunicações geradas</h2></div></div>
+<div class="table-wrap" th:if="${!fila.isEmpty()}"><table><thead><tr><th>Quando</th><th>Cliente</th><th>Tipo</th><th>Status</th><th>Ação</th></tr></thead><tbody>
+<tr th:each="c : ${fila}"><td th:text="${#temporals.format(c.dataHoraEnvio,'dd/MM/yyyy HH:mm')}">23/09/2026 10:00</td><td th:text="${c.agendamento.cliente.nome}">Cliente</td><td th:text="${c.tipo}">LEMBRETE</td><td><span class="status-badge" th:text="${c.status}">PENDENTE</span></td><td><a class="table-action" th:if="${c.whatsappUrl != null and c.status.name() != 'CANCELADA'}" th:href="${'/comunicacao/automacao/' + c.id + '/abrir'}" target="_blank" rel="noopener">Abrir WhatsApp</a><span class="section-note" th:if="${c.whatsappUrl == null}">Sem telefone válido</span><form method="post" th:action="${'/comunicacao/whatsapp-business/fila/' + c.id + '/enviar'}"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><button type="submit" class="button" th:if="${c.status.name() == 'PENDENTE' or c.status.name() == 'ABERTA'}">Enviar agora</button></form></td></tr>
+</tbody></table></div><div class="empty-state" th:if="${fila.isEmpty()}">A fila ainda não possui comunicações. O motor verifica novos agendamentos a cada 5 minutos.</div>
+</section>
+</main></th:block>
+<script>/* envio oficial é disparado pelo backend; a ação manual usa o endpoint seguro */</script></body></html>

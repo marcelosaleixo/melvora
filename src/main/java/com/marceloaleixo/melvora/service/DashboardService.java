@@ -107,6 +107,19 @@ public class DashboardService {
                 (role == Role.ADMIN || role == Role.PROFISSIONAL || role == Role.RECEPCIONISTA)) {
             adicionarSeAtivo(modulos, ativos, ModuloSistema.HISTORICO, "/clientes");
         }
+        if (ativos.contains(ModuloSistema.AGENDA) &&
+                (role == Role.ADMIN || role == Role.PROFISSIONAL || role == Role.RECEPCIONISTA)) {
+            adicionarSeAtivo(modulos, ativos, ModuloSistema.AGENDA, "/agenda");
+        }
+        if (ativos.contains(ModuloSistema.FINANCEIRO) && (role == Role.ADMIN || role == Role.RECEPCIONISTA)) {
+            adicionarSeAtivo(modulos, ativos, ModuloSistema.FINANCEIRO, "/financeiro");
+        }
+        if (ativos.contains(ModuloSistema.SERVICOS) && role == Role.ADMIN) {
+            adicionarSeAtivo(modulos, ativos, ModuloSistema.SERVICOS, "/servicos");
+        }
+        if (ativos.contains(ModuloSistema.RELATORIOS) && role == Role.ADMIN) {
+            adicionarSeAtivo(modulos, ativos, ModuloSistema.RELATORIOS, "/relatorios");
+        }
         return modulos;
     }
 

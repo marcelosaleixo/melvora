@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface EmpresaRepository extends JpaRepository<Empresa, Long> {
     long countByAtivaTrue();
     boolean existsByNomeFantasiaIgnoreCase(String nomeFantasia);
+    java.util.List<Empresa> findByAtivaTrue();
 }

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Comunicação')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar">
+  <div><span class="eyebrow">COMUNICAÇÃO</span><h1>WhatsApp com clientes</h1><p>Envie confirmações, lembretes e mensagens sem sair do fluxo do Melvora.</p></div>
+</header>
+<div class="panel" sec:authorize="hasRole('ADMIN')">
+  <div class="panel-heading"><div><span class="section-kicker">CONFIGURAÇÃO</span><h2>Templates de WhatsApp</h2><p class="section-note">Crie e personalize mensagens reutilizáveis para sua empresa.</p></div><div class="table-actions"><a class="primary-button" th:href="@{/comunicacao/automacao}">Automação</a><a class="primary-button" th:href="@{/comunicacao/templates}">Templates</a></div></div>
+</div>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+
+<section class="info-grid">
+  <div class="info-card"><span>Próximos 7 dias</span><strong th:text="${agendamentos.size()}">0</strong><p>Agendamentos que podem receber confirmação ou lembrete.</p></div>
+  <div class="info-card"><span>Clientes ativas</span><strong th:text="${clientes.size()}">0</strong><p>Contatos disponíveis para comunicação direta.</p></div>
+  <div class="info-card"><span>Privacidade</span><strong>Tenant isolado</strong><p>Os contatos e agendamentos são sempre consultados pela empresa autenticada.</p></div>
+</section>
+
+<section class="panel">
+  <div class="panel-heading"><div><span class="section-kicker">AGENDA</span><h2>Confirmações e lembretes</h2></div></div>
+  <div class="table-wrap" th:if="${!agendamentos.isEmpty()}">
+    <table><thead><tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Profissional</th><th>Status</th><th>Ações</th></tr></thead>
+    <tbody><tr th:each="a : ${agendamentos}">
+      <td><strong th:text="${#temporals.format(a.dataHoraInicio, 'dd/MM/yyyy HH:mm')}">01/01/2026 09:00</strong></td>
+      <td th:text="${a.cliente.nome}">Cliente</td>
+      <td th:text="${a.servico != null ? a.servico.nome : a.tipo.nome}">Serviço</td>
+      <td th:text="${a.profissional.nome}">Profissional</td>
+      <td><span class="status-badge" th:text="${a.status.nome}">Agendado</span></td>
+      <td><div class="table-actions">
+        <a class="table-action" th:href="${'/comunicacao/whatsapp/agendamento/' + a.id + '/confirmacao'}" target="_blank" rel="noopener">Confirmar</a>
+        <a class="table-action" th:href="${'/comunicacao/whatsapp/agendamento/' + a.id + '/lembrete'}" target="_blank" rel="noopener">Lembrete</a>
+        <a class="table-action" th:each="t : ${templates}" th:href="${'/comunicacao/whatsapp/agendamento/' + a.id + '/template/' + t.id}" target="_blank" rel="noopener" th:text="${t.nome}">Template</a>
+      </div></td>
+    </tr></tbody></table>
+  </div>
+  <div class="empty-state" th:if="${agendamentos.isEmpty()}">Nenhum agendamento pendente nos próximos 7 dias.</div>
+</section>
+
+<section class="panel">
+  <div class="panel-heading"><div><span class="section-kicker">CONTATOS</span><h2>Mensagem direta</h2></div></div>
+  <div class="table-wrap" th:if="${!clientes.isEmpty()}">
+    <table><thead><tr><th>Cliente</th><th>Telefone</th><th>Ação</th></tr></thead>
+    <tbody><tr th:each="c : ${clientes}">
+      <td><strong th:text="${c.nome}">Cliente</strong></td><td th:text="${c.telefone ?: 'Não informado'}">—</td>
+      <td><a class="table-action" th:if="${c.telefone != null and !c.telefone.isBlank()}" th:href="${'/comunicacao/whatsapp/cliente/' + c.id}" target="_blank" rel="noopener">Abrir WhatsApp</a><span class="section-note" th:unless="${c.telefone != null and !c.telefone.isBlank()}">Cadastre o telefone</span></td>
+    </tr></tbody></table>
+  </div>
+  <div class="empty-state" th:if="${clientes.isEmpty()}">Nenhuma cliente ativa encontrada.</div>
+</section>
+</main>
+</th:block>
+</body>
+</html>

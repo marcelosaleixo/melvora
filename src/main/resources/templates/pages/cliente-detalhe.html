@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Ficha da cliente')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar">
+  <div><span class="eyebrow">FICHA DA CLIENTE</span><h1 th:text="${cliente.nome}">Cliente</h1><p>Dados cadastrais e histórico operacional.</p></div>
+  <div class="table-actions"><a class="secondary-button" href="/clientes">Voltar</a><a class="primary-button" th:href="${'/clientes/' + cliente.id + '/editar'}">Editar</a></div>
+</header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+<div class="info-grid">
+  <section class="info-card"><span>Contato</span><strong th:text="${cliente.telefone ?: 'Não informado'}">Não informado</strong><p th:text="${cliente.email ?: 'E-mail não informado'}">E-mail não informado</p></section>
+  <section class="info-card"><span>Status</span><strong th:text="${cliente.ativo ? 'Cliente ativa' : 'Cliente inativa'}">Cliente ativa</strong><p>O status controla a disponibilidade para novas operações.</p></section>
+  <section class="info-card" style="grid-column:1/-1"><span>Observações</span><strong th:text="${cliente.observacoes ?: 'Sem observações registradas.'}">Sem observações registradas.</strong></section>
+</div>
+
+<section class="panel" th:if="${agendaAtiva and painelCliente != null}">
+  <div class="panel-heading">
+    <div><span class="section-kicker">RELACIONAMENTO</span><h2>Agenda da cliente</h2><p class="section-note">Acompanhe os próximos compromissos e o histórico recente de atendimento.</p></div>
+    <a class="primary-button" th:href="${'/agenda?clienteId=' + cliente.id}">+ Agendar atendimento</a>
+  </div>
+  <div class="history-summary">
+    <div class="history-summary-card">
+      <span>Próximo atendimento</span>
+      <strong th:if="${painelCliente.proximoAtendimento != null}" th:text="${#temporals.format(painelCliente.proximoAtendimento.dataHoraInicio, 'dd/MM HH:mm')}">—</strong>
+      <strong class="muted" th:unless="${painelCliente.proximoAtendimento != null}">Nenhum</strong>
+      <small th:if="${painelCliente.proximoAtendimento != null}" th:text="${painelCliente.proximoAtendimento.tipo.nome + ' · ' + painelCliente.proximoAtendimento.profissional.nome}">Atendimento</small>
+      <small th:unless="${painelCliente.proximoAtendimento != null}">Nenhum atendimento futuro confirmado.</small>
+    </div>
+    <div class="history-summary-card">
+      <span>Total de atendimentos</span><strong th:text="${painelCliente.totalAtendimentos}">0</strong>
+      <small th:text="${painelCliente.atendimentosConcluidos + ' concluído(s)'}">0 concluído(s)</small>
+    </div>
+    <div class="history-summary-card">
+      <span>Último atendimento</span>
+      <strong th:if="${painelCliente.ultimoAtendimento != null}" th:text="${#temporals.format(painelCliente.ultimoAtendimento.dataHoraInicio, 'dd/MM/yyyy')}">—</strong>
+      <strong class="muted" th:unless="${painelCliente.ultimoAtendimento != null}">Nenhum</strong>
+      <small th:if="${painelCliente.ultimoAtendimento != null}" th:text="${painelCliente.ultimoAtendimento.tipo.nome + ' · ' + painelCliente.ultimoAtendimento.status.nome}">Atendimento</small>
+      <small th:unless="${painelCliente.ultimoAtendimento != null}">Ainda não há atendimento registrado.</small>
+    </div>
+  </div>
+
+  <div class="table-wrap" th:if="${!painelCliente.atendimentosRecentes.isEmpty()}">
+    <table>
+      <thead><tr><th>Data</th><th>Atendimento</th><th>Profissional</th><th>Status</th><th>Ação</th></tr></thead>
+      <tbody>
+      <tr th:each="a : ${painelCliente.atendimentosRecentes}">
+        <td><strong th:text="${#temporals.format(a.dataHoraInicio, 'dd/MM/yyyy HH:mm')}">01/01/2026 09:00</strong></td>
+        <td th:text="${a.tipo.nome}">Atendimento</td>
+        <td th:text="${a.profissional.nome}">Profissional</td>
+        <td><span class="status-badge" th:classappend="${a.status.name() == 'CONCLUIDO' ? ' success' : (a.status.name() == 'CANCELADO' or a.status.name() == 'FALTOU' ? ' muted' : '')}" th:text="${a.status.nome}">Agendado</span></td>
+        <td><a class="table-action" th:href="${'/agenda?data=' + a.dataHoraInicio.toLocalDate()}">Ver agenda</a></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="empty-state" th:if="${painelCliente.atendimentosRecentes.isEmpty()}">Nenhum atendimento registrado para esta cliente.</div>
+</section>
+
+<section class="panel" th:if="${historicoAtivo}">
+  <div class="panel-heading"><div><span class="section-kicker">JORNADA</span><h2>Histórico de Mega Hair</h2></div></div>
+
+  <div class="history-summary" th:if="${historico != null}">
+    <div class="history-summary-card">
+      <span>Status atual</span>
+      <strong th:classappend="${historico.resumo.statusAtual == 'ATIVO' ? ' success' : (historico.resumo.statusAtual == 'REMOVIDO' ? ' danger' : ' muted')}"
+              th:text="${historico.resumo.statusAtual == 'SEM_APLICACAO' ? 'Sem aplicação' : (historico.resumo.statusAtual == 'REMOVIDO' ? 'Removido' : 'Ativo')}">Ativo</strong>
+      <small th:text="${historico.resumo.statusDescricao}">Status</small>
+    </div>
+    <div class="history-summary-card">
+      <span>Aplicações</span>
+      <strong th:text="${historico.resumo.totalAplicacoes}">0</strong>
+      <small th:text="${historico.resumo.ultimaAplicacao != null ? 'Última: ' + historico.resumo.ultimaAplicacao : 'Nenhuma registrada'}">Nenhuma registrada</small>
+    </div>
+    <div class="history-summary-card">
+      <span>Manutenções</span>
+      <strong th:text="${historico.resumo.totalManutencoes}">0</strong>
+      <small th:text="${historico.resumo.ultimaManutencao != null ? 'Última: ' + historico.resumo.ultimaManutencao : 'Nenhuma registrada'}">Nenhuma registrada</small>
+    </div>
+  </div>
+
+  <div th:if="${historico.timeline.isEmpty()}" class="empty-state">Nenhuma aplicação ou manutenção registrada para esta cliente.</div>
+
+  <div class="timeline" th:unless="${historico.timeline.isEmpty()}">
+    <div class="history-item" th:each="item : ${historico.timeline}">
+      <div class="history-dot" th:text="${item.tipo == 'APLICACAO' ? '💇' : (item.tipo == 'REMOCAO' ? '🧹' : (item.tipo == 'REAPLICACAO' ? '🔄' : '🛠️'))}">💇</div>
+      <div class="history-content">
+        <div class="history-head">
+          <strong th:text="${item.titulo}">Evento</strong>
+          <time th:text="${item.data}">2026-01-01</time>
+        </div>
+        <p th:text="${'Profissional: ' + item.profissional}">Profissional</p>
+        <p th:if="${item.descricao != null and !item.descricao.isBlank()}" th:text="${item.descricao}">Descrição</p>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="panel" th:unless="${historicoAtivo}">
+  <div class="module-warning"><strong>Histórico não contratado</strong><p>O módulo Histórico não está ativo para esta empresa. Os dados cadastrais continuam disponíveis, mas o histórico de Mega Hair permanece protegido pelo licenciamento.</p></div>
+</section>
+</main>
+</th:block>
+</body>
+</html>

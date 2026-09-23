@@ -79,4 +79,15 @@ public class Cliente {
     public boolean isAtivo() {
         return ativo;
     }
+
+    public void atualizar(String nome, String telefone, String email, String observacoes) {
+        this.nome = nome;
+        this.telefone = telefone;
+        this.email = email;
+        this.observacoes = observacoes;
+    }
+
+    public void definirAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
 }

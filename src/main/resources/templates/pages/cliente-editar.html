@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Editar cliente')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar">
+  <div><span class="eyebrow">RELACIONAMENTO</span><h1>Editar cliente</h1><p>Atualize os dados cadastrais sem alterar o histórico de Mega Hair.</p></div>
+  <a class="secondary-button" th:href="${'/clientes/' + clienteId}">Voltar para ficha</a>
+</header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+<section class="panel narrow">
+  <form class="form-grid" method="post" th:action="${'/clientes/' + clienteId + '/editar'}" th:object="${clienteForm}">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+    <label class="field">Nome<input th:field="*{nome}" maxlength="150" required autocomplete="name" th:classappend="${#fields.hasErrors('nome') ? ' input-error' : ''}"><small class="field-error" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></small></label>
+    <label class="field">Telefone<input th:field="*{telefone}" maxlength="30" autocomplete="tel" th:classappend="${#fields.hasErrors('telefone') ? ' input-error' : ''}"><small class="field-error" th:if="${#fields.hasErrors('telefone')}" th:errors="*{telefone}"></small></label>
+    <label class="field">E-mail<input th:field="*{email}" type="email" maxlength="180" autocomplete="email" th:classappend="${#fields.hasErrors('email') ? ' input-error' : ''}"><small class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small></label>
+    <label class="field full">Observações<textarea th:field="*{observacoes}" maxlength="1000"></textarea><small class="field-error" th:if="${#fields.hasErrors('observacoes')}" th:errors="*{observacoes}"></small></label>
+    <div class="form-actions"><button class="primary-button" type="submit">Salvar alterações</button></div>
+  </form>
+</section>
+</main>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Editar Template')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar"><div><span class="eyebrow">COMUNICAÇÃO</span><h1>Editar template</h1><p>Atualize o conteúdo da mensagem sem alterar o isolamento da empresa.</p></div></header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+<section class="panel">
+<form th:action="${'/comunicacao/templates/' + templateId + '/editar'}" th:object="${form}" method="post" class="form-grid">
+<div class="form-field"><label for="nome">Nome</label><input id="nome" type="text" th:field="*{nome}" maxlength="100" required><small class="field-error" th:errors="*{nome}"></small></div>
+<div class="form-field full"><label for="mensagem">Mensagem</label><textarea id="mensagem" th:field="*{mensagem}" rows="9" maxlength="4000" required></textarea><small class="field-error" th:errors="*{mensagem}"></small></div>
+<div class="form-field full"><p class="section-note"><strong>Variáveis:</strong> {cliente}, {empresa}, {servico}, {data}, {hora}, {profissional}.</p></div>
+<div class="form-actions"><button class="primary-button" type="submit">Salvar alterações</button><a class="secondary-button" th:href="@{/comunicacao/templates}">Cancelar</a></div>
+</form>
+</section>
+</main>
+</th:block>
+</body>
+</html>

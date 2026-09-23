@@ -3,6 +3,7 @@ package com.marceloaleixo.melvora.config;
 import com.marceloaleixo.melvora.security.TenantFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.client.RestClient;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -14,6 +15,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
+
+    @Bean
+    RestClient.Builder restClientBuilder() {
+        return RestClient.builder();
+    }
 
     @Bean
     PasswordEncoder passwordEncoder() {
@@ -28,7 +34,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/login", "/css/**", "/js/**", "/images/**", "/error"
+                    "/login", "/css/**", "/js/**", "/images/**", "/error", "/webhooks/whatsapp", "/webhooks/n8n/whatsapp/**"
                 ).permitAll()
                 .requestMatchers("/super-admin/**").hasRole("SUPER_ADMIN")
                 .anyRequest().authenticated()

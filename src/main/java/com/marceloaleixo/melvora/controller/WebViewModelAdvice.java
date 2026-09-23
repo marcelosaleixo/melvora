@@ -30,8 +30,13 @@ public class WebViewModelAdvice {
         if (uri.startsWith("/produtos")) return "produtos";
         if (uri.startsWith("/estoque")) return "estoque";
         if (uri.startsWith("/mega-hair")) return "mega-hair";
+        if (uri.startsWith("/agenda")) return "agenda";
         if (uri.startsWith("/usuarios") || uri.startsWith("/super-admin/usuarios")) return "usuarios";
         if (uri.startsWith("/empresas")) return "empresas";
+        if (uri.startsWith("/servicos")) return "servicos";
+        if (uri.startsWith("/atendimentos")) return "atendimentos";
+        if (uri.startsWith("/financeiro")) return "financeiro";
+        if (uri.startsWith("/relatorios")) return "relatorios";
         return "";
     }
 

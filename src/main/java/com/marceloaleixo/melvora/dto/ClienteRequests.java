@@ -15,6 +15,16 @@ public final class ClienteRequests {
             @Email @Size(max = 180) String email,
             @Size(max = 1000) String observacoes) {}
 
+    public record EditarClienteRequest(
+            @NotBlank @Size(max = 150) String nome,
+            @Size(max = 30) String telefone,
+            @Email @Size(max = 180) String email,
+            @Size(max = 1000) String observacoes) {
+        public CriarClienteRequest toCriar() {
+            return new CriarClienteRequest(nome, telefone, email, observacoes);
+        }
+    }
+
     public record ClienteResponse(Long id, String nome, String telefone, String email, String observacoes) {
         public static ClienteResponse from(Cliente c) {
             return new ClienteResponse(c.getId(), c.getNome(), c.getTelefone(), c.getEmail(), c.getObservacoes());

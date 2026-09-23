@@ -12,5 +12,7 @@ public interface AplicacaoMegaHairRepository extends JpaRepository<AplicacaoMega
     Optional<AplicacaoMegaHair> findByIdAndEmpresaId(Long id, Long empresaId);
     @EntityGraph(attributePaths = {"cliente", "profissional", "lotes", "lotes.lote"})
     List<AplicacaoMegaHair> findByEmpresaIdAndClienteIdOrderByDataAplicacaoDesc(Long empresaId, Long clienteId);
+    boolean existsByAgendamentoIdAndEmpresaId(Long agendamentoId, Long empresaId);
+    Optional<AplicacaoMegaHair> findTopByEmpresaIdAndClienteIdOrderByDataAplicacaoDesc(Long empresaId, Long clienteId);
     long countByEmpresaId(Long empresaId);
 }

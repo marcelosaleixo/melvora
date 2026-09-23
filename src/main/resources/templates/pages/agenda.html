@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Agenda')}" ></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar">
+  <div><span class="eyebrow">AGENDA</span><h1>Agenda de atendimentos</h1><p>Organize a rotina da equipe sem conflitos de horário.</p></div>
+</header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+
+<section class="agenda-toolbar panel">
+  <div>
+    <span class="section-kicker">SEMANA</span>
+    <h2 th:text="${#temporals.format(inicioSemana, 'dd/MM/yyyy') + ' — ' + #temporals.format(fimSemana, 'dd/MM/yyyy')}">Semana</h2>
+  </div>
+  <div class="agenda-navigation">
+    <a class="secondary-button" th:href="@{/agenda(data=${inicioSemana.minusDays(7)})}">← Semana anterior</a>
+    <a class="secondary-button" th:href="@{/agenda(data=${T(java.time.LocalDate).now()})}">Hoje</a>
+    <a class="secondary-button" th:href="@{/agenda(data=${inicioSemana.plusDays(7)})}">Próxima semana →</a>
+  </div>
+</section>
+
+<section class="module-layout">
+  <section class="panel" sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL')">
+    <div class="panel-heading"><div><span class="section-kicker">NOVO ATENDIMENTO</span><h2>Agendar horário</h2></div></div>
+    <form class="form-grid" method="post" th:action="@{/agenda}" th:object="${agendaForm}">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+      <div class="field full"><label for="clienteId">Cliente</label><select id="clienteId" th:field="*{clienteId}" required><option value="">Selecione</option><option th:each="c : ${clientes}" th:value="${c.id}" th:text="${c.nome}"></option></select><small th:if="${#fields.hasErrors('clienteId')}" class="field-error" th:errors="*{clienteId}"></small></div>
+      <div class="field"><label for="profissionalId">Profissional</label><select id="profissionalId" th:field="*{profissionalId}" required><option value="">Selecione</option><option th:each="p : ${profissionais}" th:value="${p.id}" th:text="${p.nome}"></option></select><small th:if="${#fields.hasErrors('profissionalId')}" class="field-error" th:errors="*{profissionalId}"></small></div>
+      <div class="field"><label for="tipo">Tipo</label><select id="tipo" th:field="*{tipo}" required><option value="">Selecione</option><option th:each="t : ${tipos}" th:value="${t}" th:text="${t.nome}"></option></select><small th:if="${#fields.hasErrors('tipo')}" class="field-error" th:errors="*{tipo}"></small></div>
+      <div class="field" th:if="${servicosAtivo}"><label for="servicoId">Serviço / procedimento</label><select id="servicoId" th:field="*{servicoId}"><option value="">Nenhum serviço específico</option><option th:each="s : ${servicos}" th:value="${s.id}" th:attr="data-duration=${s.duracaoMinutos}" th:text="${s.nome + ' · ' + s.duracaoMinutos + ' min · R$ ' + #numbers.formatDecimal(s.preco,1,2)}"></option></select><small>A duração cadastrada no serviço define automaticamente o horário final.</small></div>
+      <div class="field"><label for="dataHoraInicio">Início</label><input id="dataHoraInicio" th:field="*{dataHoraInicio}" type="datetime-local" required><small th:if="${#fields.hasErrors('dataHoraInicio')}" class="field-error" th:errors="*{dataHoraInicio}"></small></div>
+      <div class="field"><label for="dataHoraFim">Fim</label><input id="dataHoraFim" th:field="*{dataHoraFim}" type="datetime-local" required><small th:if="${#fields.hasErrors('dataHoraFim')}" class="field-error" th:errors="*{dataHoraFim}"></small></div>
+      <div class="field full"><label for="observacoes">Observações</label><textarea id="observacoes" th:field="*{observacoes}" maxlength="2000" placeholder="Detalhes importantes do atendimento"></textarea></div>
+      <button class="primary-button full" type="submit">Agendar atendimento</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="panel-heading"><div><span class="section-kicker">VISÃO SEMANAL</span><h2>Atendimentos</h2></div><span class="section-note" th:text="${agendamentos.size() + ' agendamentos'}">0 agendamentos</span></div>
+    <div class="agenda-list" th:if="${!agendamentos.isEmpty()}">
+      <article class="agenda-item" th:each="a : ${agendamentos}">
+        <div class="agenda-time"><strong th:text="${#temporals.format(a.dataHoraInicio, 'dd/MM')}">23/09</strong><span th:text="${#temporals.format(a.dataHoraInicio, 'HH:mm') + '–' + #temporals.format(a.dataHoraFim, 'HH:mm')}">09:00–10:00</span></div>
+        <div class="agenda-copy"><strong th:text="${a.cliente.nome}">Cliente</strong><p><span th:text="${a.tipo.nome}">Atendimento</span><span th:if="${a.servico != null}" th:text="${' · ' + a.servico.nome}"></span> · <span th:text="${a.profissional.nome}">Profissional</span></p><small th:if="${a.observacoes != null and !a.observacoes.isBlank()}" th:text="${a.observacoes}"></small></div>
+        <div class="agenda-actions">
+          <span class="status-badge" th:classappend="${a.status.name() == 'CONFIRMADO' ? ' success' : (a.status.name() == 'CANCELADO' or a.status.name() == 'FALTOU' ? ' muted' : '')}" th:text="${a.status.nome}">Agendado</span>
+          <form sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL')" method="post" th:if="${a.status.name() == 'AGENDADO'}" th:action="${'/agenda/' + a.id + '/status'}"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><input type="hidden" name="status" value="CONFIRMADO"><input type="hidden" name="data" th:value="${dataSelecionada}"><button class="table-action-button" type="submit">Confirmar</button></form>
+          <form sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL')" method="post" th:if="${a.status.name() == 'CONFIRMADO'}" th:action="${'/agenda/' + a.id + '/status'}"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><input type="hidden" name="status" value="EM_ATENDIMENTO"><input type="hidden" name="data" th:value="${dataSelecionada}"><button class="table-action-button" type="submit">Iniciar</button></form>
+          <form sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL')" method="post" th:if="${a.status.name() == 'EM_ATENDIMENTO'}" th:action="${'/agenda/' + a.id + '/status'}"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><input type="hidden" name="status" value="CONCLUIDO"><input type="hidden" name="data" th:value="${dataSelecionada}"><button class="table-action-button" type="submit">Concluir</button></form>
+          <form sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL')" method="post" th:if="${a.status.name() == 'AGENDADO' or a.status.name() == 'CONFIRMADO'}" th:action="${'/agenda/' + a.id + '/status'}"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><input type="hidden" name="status" value="CANCELADO"><input type="hidden" name="data" th:value="${dataSelecionada}"><button class="table-action-button danger-link" type="submit">Cancelar</button></form>
+          <form sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL')" method="post" th:if="${a.status.name() == 'AGENDADO' or a.status.name() == 'CONFIRMADO'}" th:action="${'/agenda/' + a.id + '/status'}"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><input type="hidden" name="status" value="FALTOU"><input type="hidden" name="data" th:value="${dataSelecionada}"><button class="table-action-button warning-link" type="submit">Faltou</button></form>
+          <a class="table-action-button" sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL')" th:if="${a.status.name() == 'AGENDADO' or a.status.name() == 'CONFIRMADO'}" th:href="${'/agenda/' + a.id + '/editar'}">Editar</a>
+          <a class="table-action-button" sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL')" th:if="${megaHairAtivo and a.status.name() == 'CONCLUIDO' and a.tipo.name() == 'APLICACAO_MEGA_HAIR'}" th:href="${'/mega-hair?agendamentoId=' + a.id}">Registrar aplicação</a>
+          <a class="table-action-button" sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL')" th:if="${megaHairAtivo and a.status.name() == 'CONCLUIDO' and a.tipo.name() == 'MANUTENCAO_MEGA_HAIR'}" th:href="${'/mega-hair/manutencao/novo?agendamentoId=' + a.id}">Registrar manutenção</a>
+        </div>
+      </article>
+    </div>
+    <div class="empty-state" th:if="${agendamentos.isEmpty()}">Nenhum atendimento agendado nesta semana.</div>
+  </section>
+</section>
+
+<section class="info-grid">
+  <div class="info-card"><span>Conflitos</span><strong>Profissional + cliente</strong><p>O sistema bloqueia sobreposição de horários para o mesmo profissional e para a mesma cliente.</p></div>
+  <div class="info-card"><span>Segurança</span><strong>Tenant + banco</strong><p>A empresa é obtida pela autenticação e o PostgreSQL também protege a concorrência entre agendamentos.</p></div>
+</section>
+<script id="agendaServiceScript">
+(function(){
+  const service = document.getElementById('servicoId');
+  const start = document.getElementById('dataHoraInicio');
+  const end = document.getElementById('dataHoraFim');
+  if (!service || !start || !end) return;
+  function sync(){
+    const option = service.options[service.selectedIndex];
+    const minutes = option && option.dataset.duration ? Number(option.dataset.duration) : 0;
+    if (!minutes || !start.value) return;
+    const date = new Date(start.value);
+    date.setMinutes(date.getMinutes() + minutes);
+    const pad = n => String(n).padStart(2,'0');
+    end.value = date.getFullYear() + '-' + pad(date.getMonth()+1) + '-' + pad(date.getDate()) + 'T' + pad(date.getHours()) + ':' + pad(date.getMinutes());
+  }
+  service.addEventListener('change', sync);
+  start.addEventListener('change', sync);
+})();
+</script>
+</main>
+</th:block>
+</body>
+</html>

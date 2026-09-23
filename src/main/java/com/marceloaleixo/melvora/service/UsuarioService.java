@@ -37,7 +37,7 @@ public class UsuarioService {
 
     @Transactional(readOnly = true)
     public Page<Usuario> listarPlataforma(Pageable pageable) {
-        return usuarioRepository.findAll(pageable);
+        return usuarioRepository.findAllWithEmpresa(pageable);
     }
 
     @Transactional
