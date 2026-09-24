@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>4.1.1</version>
+        <version>4.2.0-M1</version>
         <relativePath/>
     </parent>
 
@@ -18,7 +18,7 @@
     <description>SaaS multitenant para gestão de negócios de beleza</description>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
     </properties>
 
     <dependencies>

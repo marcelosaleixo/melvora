@@ -33,7 +33,7 @@ public interface AtendimentoRepository extends JpaRepository<Atendimento, Long> 
 
     @Query("select new com.marceloaleixo.melvora.dto.RelatorioData$Item(a.profissional.nome, count(a), coalesce(sum(a.valorCobrado),0)) from Atendimento a where a.empresa.id=:empresa and a.dataHoraInicio >= :inicio and a.dataHoraInicio < :fim group by a.profissional.id, a.profissional.nome order by sum(a.valorCobrado) desc")
     List<RelatorioData.Item> profissionaisPorFaturamento(@Param("empresa") Long empresa, @Param("inicio") LocalDateTime inicio, @Param("fim") LocalDateTime fim, org.springframework.data.domain.Pageable pageable);
-    @Query("select a.cliente.id, a.cliente.nome, a.cliente.telefone, max(a.dataHoraInicio), count(a) from Atendimento a where a.empresa.id = :empresa and a.cliente.ativo = true group by a.cliente.id, a.cliente.nome, a.cliente.telefone having max(a.dataHoraInicio) < :limite order by max(a.dataHoraInicio) asc")
+    @Query("select a.cliente.id, a.cliente.nome, a.cliente.telefone, max(a.dataHoraInicio), count(a) from Atendimento a where a.empresa.id = :empresa and a.cliente.ativo = true group by a.cliente.id, a.cliente.nome, a.cliente.telefone having max(a.dataHoraInicio) < :limite order by max(a.dataHoraInicio) asc, a.cliente.nome asc")
     List<Object[]> listarOportunidadesRetencao(@Param("empresa") Long empresa, @Param("limite") LocalDateTime limite, org.springframework.data.domain.Pageable pageable);
 
     @Query("select distinct a.cliente.id from Atendimento a where a.empresa.id=:empresa and a.cliente.ativo=true and lower(a.servicoNome)=lower(:servico) order by a.cliente.id")
