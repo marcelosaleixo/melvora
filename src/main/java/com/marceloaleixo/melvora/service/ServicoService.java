@@ -88,8 +88,12 @@ public class ServicoService {
 
     @Transactional(readOnly = true)
     public Servico buscarParaAgendamento(Long id, Long profissionalId) {
-        moduloAcessoService.exigir(ModuloSistema.SERVICOS);
-        Long empresaId = TenantContext.getRequired();
+        return buscarParaAgendamento(id, profissionalId, TenantContext.getRequired());
+    }
+
+    @Transactional(readOnly = true)
+    public Servico buscarParaAgendamento(Long id, Long profissionalId, Long empresaId) {
+        moduloAcessoService.exigir(empresaId, ModuloSistema.SERVICOS);
         Servico servico = repository.findByIdAndEmpresaId(id, empresaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Serviço não encontrado."));
         if (!servico.isAtivo()) throw new RegraNegocioException("O serviço selecionado está inativo.");

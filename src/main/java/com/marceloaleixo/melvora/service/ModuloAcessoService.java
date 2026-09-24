@@ -38,6 +38,19 @@ public class ModuloAcessoService {
     }
 
     @Transactional(readOnly = true)
+    public boolean possui(Long empresaId, ModuloSistema modulo) {
+        if (empresaId == null || modulo == null) return false;
+        return repository.findByEmpresaIdAndModulo(empresaId, modulo).map(EmpresaModulo::isAtivo).orElse(false);
+    }
+
+    @Transactional(readOnly = true)
+    public void exigir(Long empresaId, ModuloSistema modulo) {
+        if (!possui(empresaId, modulo)) {
+            throw new ModuloNaoContratadoException("O módulo " + modulo.getNome() + " não está contratado para esta empresa.");
+        }
+    }
+
+    @Transactional(readOnly = true)
     public List<ModuloSistema> modulosAtivosDaEmpresa(Long empresaId) {
         return repository.findModulosAtivos(empresaId);
     }

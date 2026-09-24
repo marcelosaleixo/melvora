@@ -14,7 +14,7 @@
   <form th:action="@{/comunicacao/templates}" th:object="${form}" method="post" class="form-grid">
     <div class="form-field"><label for="nome">Nome</label><input id="nome" type="text" th:field="*{nome}" maxlength="100" placeholder="Ex.: Confirmação de atendimento" required><small class="field-error" th:errors="*{nome}"></small></div>
     <div class="form-field full"><label for="mensagem">Mensagem</label><textarea id="mensagem" th:field="*{mensagem}" rows="7" maxlength="4000" placeholder="Digite a mensagem..." required></textarea><small class="field-error" th:errors="*{mensagem}"></small></div>
-    <div class="form-field full"><p class="section-note"><strong>Variáveis:</strong> {cliente}, {empresa}, {servico}, {data}, {hora}, {profissional}. Elas serão substituídas automaticamente quando usadas em um agendamento.</p></div>
+    <div class="form-field full"><p class="section-note"><strong>Variáveis:</strong> {cliente}, {empresa}, {servico}, {data}, {hora}, {profissional}, {avaliacao_link}. Elas serão substituídas automaticamente quando usadas em um agendamento.</p></div>
     <div class="form-actions"><button class="primary-button" type="submit">Salvar template</button><a class="secondary-button" th:href="@{/comunicacao}">Voltar</a></div>
   </form>
 </section>

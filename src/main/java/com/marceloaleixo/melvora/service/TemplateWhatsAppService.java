@@ -47,11 +47,11 @@ public class TemplateWhatsAppService {
         Empresa empresa = empresaRepository.findById(empresaId)
                 .orElseThrow(() -> new RegraNegocioException("Empresa não encontrada."));
         criarPadraoSeAusente(empresa, "Confirmação de agendamento",
-                "Olá, {cliente}! 😊\n\nPassando para confirmar seu atendimento em {empresa}.\n📅 {data} às {hora}\n💇 {servico}\n👤 Profissional: {profissional}\n\nPodemos confirmar seu horário?");
+                "Olá, {cliente}! 😊\n\nPassando para confirmar seu atendimento em {empresa}.\n📅 {data} às {hora}\n💇 {servico}\n👤 Profissional: {profissional}\n\nResponda 1️⃣ CONFIRMAR\n2️⃣ REMARCAR\n3️⃣ CANCELAR");
         criarPadraoSeAusente(empresa, "Lembrete de atendimento",
-                "Olá, {cliente}! 💖\n\nEste é um lembrete do seu atendimento em {empresa}.\n📅 {data} às {hora}\n💇 {servico}\n👤 Profissional: {profissional}\n\nEsperamos você!");
+                "Olá, {cliente}! 💖\n\nSeu atendimento em {empresa} está chegando!\n📅 {data} às {hora}\n💇 {servico}\n👤 Profissional: {profissional}\n\nSe precisar, responda 1️⃣ para confirmar, 2️⃣ para remarcar ou 3️⃣ para cancelar.\n\nEsperamos você! ✨");
         criarPadraoSeAusente(empresa, "Pós-atendimento",
-                "Olá, {cliente}! 💕\n\nFoi um prazer receber você na {empresa}. Esperamos que tenha gostado do seu atendimento de {servico}.\n\nQuando precisar, estaremos à disposição!");
+                "Olá, {cliente}! 💕\n\nFoi um prazer receber você na {empresa}. Esperamos que tenha gostado do seu atendimento de {servico}.\n\nComo foi sua experiência? Avalie seu atendimento aqui:\n{avaliacao_link}\n\nQuando precisar, estaremos à disposição!");
     }
 
     private void criarPadraoSeAusente(Empresa empresa, String nome, String mensagem) {

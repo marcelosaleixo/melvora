@@ -36,7 +36,7 @@ public class ComunicacaoAutomacaoController {
         var config = service.configuracao(empresaId, empresa);
         model.addAttribute("config", config);
         model.addAttribute("fila", service.fila(empresaId, PageRequest.of(0, 30, Sort.by("dataHoraEnvio").ascending())));
-        model.addAttribute("form", new ComunicacaoRequests.ConfigForm(config.isConfirmacaoAtiva(), config.getConfirmacaoMinutosAntes(), config.isLembreteAtivo(), config.getLembreteMinutosAntes(), config.isPosAtendimentoAtivo(), config.getPosAtendimentoMinutosDepois()));
+        model.addAttribute("form", new ComunicacaoRequests.ConfigForm(config.isConfirmacaoAtiva(), config.getConfirmacaoMinutosAntes(), config.isLembreteAtivo(), config.getLembreteMinutosAntes(), config.isPosAtendimentoAtivo(), config.getPosAtendimentoMinutosDepois(), config.isRetencaoAtiva(), config.getRetencaoDiasSemRetorno(), config.getRetencaoMensagem(), config.isRetencaoAutomaticaAtiva(), config.getRetencaoCooldownDias(), config.getRetencaoHorarioInicio(), config.getRetencaoHorarioFim(), config.getRetencaoMaxEnviosDia()));
         model.addAttribute("activePage", "automacao");
         return "pages/comunicacao-automacao";
     }

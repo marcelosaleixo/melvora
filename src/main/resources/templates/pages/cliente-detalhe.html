@@ -6,7 +6,7 @@
 <main class="main-content">
 <header class="topbar">
   <div><span class="eyebrow">FICHA DA CLIENTE</span><h1 th:text="${cliente.nome}">Cliente</h1><p>Dados cadastrais e histórico operacional.</p></div>
-  <div class="table-actions"><a class="secondary-button" href="/clientes">Voltar</a><a class="primary-button" th:href="${'/clientes/' + cliente.id + '/editar'}">Editar</a></div>
+  <div class="table-actions"><a class="secondary-button" href="/clientes">Voltar</a><a class="secondary-button" th:href="${'/clientes/' + cliente.id + '/crm'}">CRM 360°</a><a class="primary-button" th:href="${'/clientes/' + cliente.id + '/editar'}">Editar</a></div>
 </header>
 <th:block th:replace="~{fragments/feedback :: messages}"></th:block>
 <div class="info-grid">

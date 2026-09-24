@@ -5,6 +5,7 @@ import com.marceloaleixo.melvora.entity.Agendamento;
 import com.marceloaleixo.melvora.entity.enums.ModuloSistema;
 import com.marceloaleixo.melvora.entity.enums.Role;
 import com.marceloaleixo.melvora.entity.enums.StatusAgendamento;
+import com.marceloaleixo.melvora.entity.enums.TipoAgendamento;
 import com.marceloaleixo.melvora.exception.RegraNegocioException;
 import com.marceloaleixo.melvora.exception.ResourceNotFoundException;
 import com.marceloaleixo.melvora.repository.AgendamentoRepository;
@@ -91,6 +92,115 @@ public class AgendaService {
         } catch (DataIntegrityViolationException ex) {
             throw new RegraNegocioException("O horário foi ocupado por outro atendimento. Atualize a agenda e tente novamente.");
         }
+    }
+
+    @Transactional
+    public Agendamento criarViaWhatsApp(Long empresaId, Long clienteId, Long profissionalId, Long servicoId,
+                                         LocalDateTime inicio, LocalDateTime fim) {
+        moduloAcessoService.exigir(empresaId, ModuloSistema.AGENDA);
+        if (empresaId == null || clienteId == null || profissionalId == null || servicoId == null || inicio == null || fim == null) {
+            throw new RegraNegocioException("Dados insuficientes para criar o agendamento pelo WhatsApp.");
+        }
+        validarHorario(inicio, fim);
+        var empresa = empresaRepository.findById(empresaId).filter(e -> e.isAtiva())
+                .orElseThrow(() -> new ResourceNotFoundException("Empresa não encontrada ou inativa."));
+        var cliente = clienteRepository.findByIdAndEmpresaId(clienteId, empresaId).filter(c -> c.isAtivo())
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado ou inativo."));
+        var profissional = usuarioRepository.findByIdAndEmpresaId(profissionalId, empresaId)
+                .filter(u -> u.isAtivo() && (u.getRole() == Role.ADMIN || u.getRole() == Role.PROFISSIONAL))
+                .orElseThrow(() -> new ResourceNotFoundException("Profissional não encontrado ou inativo."));
+        var servico = servicoService.buscarParaAgendamento(servicoId, profissionalId, empresaId);
+        if (!servico.isAtivo()) throw new RegraNegocioException("O serviço selecionado está inativo.");
+        if (repository.existeConflitoProfissional(empresaId, profissionalId, inicio, fim, STATUS_QUE_OCUPAM_HORARIO)) {
+            throw new RegraNegocioException("O horário acabou de ser ocupado por outro atendimento.");
+        }
+        if (repository.existeConflitoCliente(empresaId, clienteId, inicio, fim, STATUS_QUE_OCUPAM_HORARIO)) {
+            throw new RegraNegocioException("A cliente já possui outro atendimento nesse horário.");
+        }
+        try {
+            Agendamento a = new Agendamento(empresa, cliente, profissional, TipoAgendamento.OUTRO, inicio, fim,
+                    "Agendamento confirmado pelo WhatsApp.");
+            a.definirServico(servico);
+            return repository.saveAndFlush(a);
+        } catch (DataIntegrityViolationException ex) {
+            throw new RegraNegocioException("O horário foi ocupado por outro atendimento. Escolha outro horário.");
+        }
+    }
+
+    @Transactional
+    public Agendamento reagendarViaWhatsApp(Long empresaId, Long agendamentoId, Long profissionalId,
+                                             LocalDateTime inicio, LocalDateTime fim) {
+        moduloAcessoService.exigir(empresaId, ModuloSistema.AGENDA);
+        if (empresaId == null || agendamentoId == null || profissionalId == null || inicio == null || fim == null) {
+            throw new RegraNegocioException("Dados insuficientes para remarcar o agendamento pelo WhatsApp.");
+        }
+        validarHorario(inicio, fim);
+
+        Agendamento agendamento = repository.findByIdAndEmpresaId(agendamentoId, empresaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Agendamento não encontrado."));
+        if (agendamento.getStatus() != StatusAgendamento.AGENDADO
+                && agendamento.getStatus() != StatusAgendamento.CONFIRMADO) {
+            throw new RegraNegocioException("Este agendamento não pode mais ser remarcado.");
+        }
+
+        var profissional = usuarioRepository.findByIdAndEmpresaId(profissionalId, empresaId)
+                .filter(u -> u.isAtivo() && (u.getRole() == Role.ADMIN || u.getRole() == Role.PROFISSIONAL))
+                .orElseThrow(() -> new ResourceNotFoundException("Profissional não encontrado ou inativo."));
+        var servico = agendamento.getServico();
+        if (servico == null) {
+            throw new RegraNegocioException("O agendamento não possui serviço definido para remarcação automática.");
+        }
+        servico = servicoService.buscarParaAgendamento(servico.getId(), profissional.getId(), empresaId);
+        if (!servico.isAtivo()) throw new RegraNegocioException("O serviço selecionado está inativo.");
+
+        if (repository.existeConflitoProfissionalExcluindo(empresaId, profissional.getId(), inicio, fim, STATUS_QUE_OCUPAM_HORARIO, agendamentoId)) {
+            throw new RegraNegocioException("O profissional já possui outro atendimento nesse horário.");
+        }
+        if (repository.existeConflitoClienteExcluindo(empresaId, agendamento.getCliente().getId(), inicio, fim, STATUS_QUE_OCUPAM_HORARIO, agendamentoId)) {
+            throw new RegraNegocioException("A cliente já possui outro atendimento nesse horário.");
+        }
+
+        try {
+            agendamento.reagendar(agendamento.getTipo(), servico, inicio, fim, agendamento.getObservacoes());
+            return repository.saveAndFlush(agendamento);
+        } catch (DataIntegrityViolationException ex) {
+            throw new RegraNegocioException("O horário foi ocupado por outro atendimento. Escolha outro horário.");
+        }
+    }
+
+    @Transactional
+    public Agendamento confirmarViaWhatsApp(Long empresaId, Long agendamentoId) {
+        moduloAcessoService.exigir(empresaId, ModuloSistema.AGENDA);
+        if (empresaId == null || agendamentoId == null) {
+            throw new RegraNegocioException("Dados insuficientes para confirmar o agendamento pelo WhatsApp.");
+        }
+        Agendamento agendamento = repository.findByIdAndEmpresaId(agendamentoId, empresaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Agendamento não encontrado."));
+        if (agendamento.getStatus() == StatusAgendamento.CONFIRMADO) return agendamento;
+        if (agendamento.getStatus() != StatusAgendamento.AGENDADO) {
+            throw new RegraNegocioException("Este agendamento não pode mais ser confirmado.");
+        }
+        if (agendamento.getDataHoraInicio().isBefore(LocalDateTime.now())) {
+            throw new RegraNegocioException("O horário deste agendamento já passou.");
+        }
+        agendamento.alterarStatus(StatusAgendamento.CONFIRMADO);
+        return repository.saveAndFlush(agendamento);
+    }
+
+    @Transactional
+    public Agendamento cancelarViaWhatsApp(Long empresaId, Long agendamentoId) {
+        moduloAcessoService.exigir(empresaId, ModuloSistema.AGENDA);
+        if (empresaId == null || agendamentoId == null) {
+            throw new RegraNegocioException("Dados insuficientes para cancelar o agendamento pelo WhatsApp.");
+        }
+        Agendamento agendamento = repository.findByIdAndEmpresaId(agendamentoId, empresaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Agendamento não encontrado."));
+        if (agendamento.getStatus() != StatusAgendamento.AGENDADO
+                && agendamento.getStatus() != StatusAgendamento.CONFIRMADO) {
+            throw new RegraNegocioException("Este agendamento não pode mais ser cancelado.");
+        }
+        agendamento.alterarStatus(StatusAgendamento.CANCELADO);
+        return repository.saveAndFlush(agendamento);
     }
 
     @Transactional

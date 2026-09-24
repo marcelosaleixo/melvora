@@ -8,12 +8,17 @@
         <div>
             <span class="eyebrow">COMUNICAÇÃO</span>
             <h1>WhatsApp Business</h1>
-            <p>Conecte o Melvora ao WhatsApp oficial da empresa e automatize confirmações, lembretes e mensagens.</p>
+            <p>Conecte o Melvora ao WhatsApp da empresa e automatize confirmações, lembretes e mensagens.</p>
         </div>
         <div class="whatsapp-hero-icon" aria-hidden="true">💬</div>
     </div>
 
     <div th:replace="~{fragments/feedback :: messages}"></div>
+
+    <div class="wa-legacy-banner" th:if="${legacyN8n}">
+        <span>⚠️</span>
+        <div><strong>Integração n8n anterior detectada.</strong> Escolha uma das três APIs disponíveis abaixo para migrar a integração. A configuração antiga permanece preservada até a nova escolha ser salva.</div>
+    </div>
 
     <form method="post" th:action="@{/comunicacao/whatsapp-business}" th:object="${form}" class="whatsapp-config-form">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
@@ -23,8 +28,8 @@
                 <div>
                     <span class="wa-step">01</span>
                     <div>
-                        <h2>Escolha como o Melvora vai enviar</h2>
-                        <p>Você pode usar a Cloud API diretamente ou deixar o n8n cuidar da integração e das automações.</p>
+                        <h2>Escolha a API do WhatsApp</h2>
+                        <p>O Melvora mantém a mesma central de comunicação, independentemente do provedor escolhido.</p>
                     </div>
                 </div>
                 <span class="wa-status-pill" th:classappend="${configurado ? ' is-on' : ''}">
@@ -33,72 +38,39 @@
                 </span>
             </div>
 
-            <div class="wa-mode-grid">
+            <div class="wa-mode-grid wa-mode-grid-three">
                 <label class="wa-mode-card">
                     <input type="radio" th:field="*{modoIntegracao}" value="META_CLOUD" data-wa-mode="meta">
                     <span class="wa-mode-check">✓</span>
                     <span class="wa-mode-icon">☁️</span>
                     <span class="wa-mode-copy">
-                        <strong>WhatsApp Business Cloud</strong>
-                        <small>Integração direta com a API oficial da Meta.</small>
+                        <strong>WhatsApp Business Cloud API</strong>
+                        <small>API oficial da Meta, integrada diretamente ao Melvora.</small>
                     </span>
-                    <span class="wa-mode-tag">Direto</span>
+                    <span class="wa-mode-tag official">Oficial</span>
                 </label>
 
-                <label class="wa-mode-card wa-mode-card-featured">
-                    <input type="radio" th:field="*{modoIntegracao}" value="N8N" data-wa-mode="n8n">
+                <label class="wa-mode-card">
+                    <input type="radio" th:field="*{modoIntegracao}" value="EVOLUTION_API" data-wa-mode="evolution">
+                    <span class="wa-mode-check">✓</span>
+                    <span class="wa-mode-icon">🔄</span>
+                    <span class="wa-mode-copy">
+                        <strong>Evolution API</strong>
+                        <small>Integração com uma instância Evolution hospedada pela empresa.</small>
+                    </span>
+                    <span class="wa-mode-tag">API</span>
+                </label>
+
+                <label class="wa-mode-card">
+                    <input type="radio" th:field="*{modoIntegracao}" value="WUZAPI" data-wa-mode="wuzapi">
                     <span class="wa-mode-check">✓</span>
                     <span class="wa-mode-icon">⚡</span>
                     <span class="wa-mode-copy">
-                        <strong>n8n + WhatsApp Business</strong>
-                        <small>O Melvora dispara eventos e o n8n executa o fluxo.</small>
+                        <strong>WuzAPI Manager</strong>
+                        <small>Conecte o Melvora a uma sessão WhatsApp gerenciada pelo WuzAPI.</small>
                     </span>
-                    <span class="wa-mode-tag recommended">Automação</span>
+                    <span class="wa-mode-tag">API</span>
                 </label>
-            </div>
-        </section>
-
-        <section class="wa-panel wa-mode-section" data-wa-section="n8n">
-            <div class="wa-panel-heading compact">
-                <div>
-                    <span class="wa-step">02</span>
-                    <div>
-                        <h2>Integração com n8n</h2>
-                        <p>Informe o webhook que recebe os eventos de envio do Melvora.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="wa-info-banner">
-                <span>⚡</span>
-                <div><strong>Arquitetura recomendada</strong><br>Melvora → n8n → WhatsApp Business Cloud. O token fica protegido no Melvora e é enviado apenas por HTTPS.</div>
-            </div>
-
-            <div class="form-grid wa-form-grid">
-                <label class="wa-field full">
-                    URL do n8n
-                    <span class="wa-input-wrap"><span>🔗</span><input th:field="*{n8nBaseUrl}" placeholder="https://n8n.seudominio.com" autocomplete="url"></span>
-                    <small>Use a URL pública HTTPS do seu n8n.</small>
-                </label>
-                <label class="wa-field">
-                    Caminho do Webhook
-                    <span class="wa-input-wrap"><span>↗</span><input th:field="*{n8nWebhookPath}" placeholder="/webhook/melvora-whatsapp" autocomplete="off"></span>
-                    <small>O workflow deve aceitar POST nesse caminho.</small>
-                </label>
-                <label class="wa-field">
-                    Token de integração
-                    <span class="wa-input-wrap"><span>🔐</span><input type="password" th:field="*{n8nToken}" placeholder="Informe um token forte" autocomplete="new-password"></span>
-                    <small>Deixe vazio para manter o token salvo.</small>
-                </label>
-            </div>
-
-            <div class="wa-callback-card" th:if="${n8nConfigurado}">
-                <div class="wa-callback-icon">↩</div>
-                <div class="wa-callback-copy">
-                    <strong>Callback de status do Melvora</strong>
-                    <p>Depois de enviar pelo WhatsApp, o n8n pode informar ENVIADA, ENTREGUE, LIDA ou ERRO neste endpoint.</p>
-                    <code th:text="${n8nCallbackUrl}">/webhooks/n8n/whatsapp/chave</code>
-                </div>
             </div>
         </section>
 
@@ -107,10 +79,14 @@
                 <div>
                     <span class="wa-step">02</span>
                     <div>
-                        <h2>WhatsApp Business Cloud</h2>
-                        <p>Use esta opção se o Melvora for falar diretamente com a Graph API da Meta.</p>
+                        <h2>WhatsApp Business Cloud API</h2>
+                        <p>Use esta opção para falar diretamente com a Graph API da Meta.</p>
                     </div>
                 </div>
+            </div>
+            <div class="wa-info-banner">
+                <span>☁️</span>
+                <div><strong>Integração direta</strong><br>O Melvora conversa diretamente com a API oficial. As credenciais ficam protegidas no servidor e não são expostas ao navegador.</div>
             </div>
             <div class="form-grid wa-form-grid">
                 <label class="wa-field">
@@ -120,6 +96,7 @@
                 <label class="wa-field">
                     Access Token
                     <span class="wa-input-wrap"><span>🔐</span><input type="password" th:field="*{accessToken}" placeholder="Deixe vazio para manter o token salvo" autocomplete="new-password"></span>
+                    <small>O token é armazenado com proteção AES-256-GCM.</small>
                 </label>
                 <label class="wa-field">
                     Versão Graph API
@@ -132,12 +109,109 @@
             </div>
         </section>
 
+        <section class="wa-panel wa-mode-section" data-wa-section="evolution">
+            <div class="wa-panel-heading compact">
+                <div>
+                    <span class="wa-step">02</span>
+                    <div>
+                        <h2>Evolution API</h2>
+                        <p>Configure a URL da sua Evolution API, a chave de acesso e a instância do WhatsApp.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="wa-info-banner">
+                <span>🔄</span>
+                <div><strong>Pronto para integração</strong><br>A configuração fica isolada por empresa. O Melvora poderá utilizar a instância informada para envio e recebimento de mensagens.</div>
+            </div>
+            <div class="form-grid wa-form-grid">
+                <label class="wa-field full">
+                    URL base da Evolution API
+                    <span class="wa-input-wrap"><span>🌐</span><input th:field="*{evolutionBaseUrl}" placeholder="https://evolution.seudominio.com" autocomplete="url"></span>
+                    <small>Use uma URL pública HTTPS da sua Evolution API.</small>
+                </label>
+                <label class="wa-field">
+                    API Key
+                    <span class="wa-input-wrap"><span>🔐</span><input type="password" th:field="*{evolutionApiKey}" placeholder="Deixe vazio para manter a chave salva" autocomplete="new-password"></span>
+                    <small>A chave será criptografada no banco.</small>
+                </label>
+                <label class="wa-field">
+                    Nome da instância
+                    <span class="wa-input-wrap"><span>📲</span><input th:field="*{evolutionInstance}" placeholder="Ex.: minha-empresa" autocomplete="off"></span>
+                    <small>Informe exatamente o nome da instância criada na Evolution.</small>
+                </label>
+            </div>
+        </section>
+
+        <section class="wa-panel wa-mode-section" data-wa-section="wuzapi">
+            <div class="wa-panel-heading compact">
+                <div>
+                    <span class="wa-step">02</span>
+                    <div>
+                        <h2>WuzAPI Manager</h2>
+                        <p>Conecte o Melvora ao servidor WuzAPI e à sessão WhatsApp da empresa.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="wa-info-banner">
+                <span>⚡</span>
+                <div><strong>Integração preparada</strong><br>O WuzAPI trabalha com sessões independentes e autenticação por token. O Melvora armazenará o token de forma criptografada.</div>
+            </div>
+            <div class="form-grid wa-form-grid">
+                <label class="wa-field full">
+                    URL base do WuzAPI
+                    <span class="wa-input-wrap"><span>🌐</span><input th:field="*{wuzapiBaseUrl}" placeholder="https://wuzapi.seudominio.com" autocomplete="url"></span>
+                    <small>Use a URL pública HTTPS do seu WuzAPI Manager.</small>
+                </label>
+                <label class="wa-field full">
+                    Token da sessão WuzAPI
+                    <span class="wa-input-wrap"><span>🔐</span><input type="password" th:field="*{wuzapiToken}" placeholder="Deixe vazio para manter o token salvo" autocomplete="new-password"></span>
+                    <small>Use o token da sessão/usuário do WuzAPI. O token não será exibido novamente.</small>
+                </label>
+            </div>
+            <div class="wa-callback-card" th:if="${wuzapiConfigured}">
+                <div class="wa-callback-icon">↪</div>
+                <div class="wa-callback-copy">
+                    <strong>Webhook seguro do Melvora</strong>
+                    <p>O Melvora configura automaticamente este endereço no WuzAPI e valida os eventos com HMAC-SHA256.</p>
+                    <code th:text="${wuzapiCallbackUrl}">https://melvora.seudominio.com/webhooks/wuzapi/...</code>
+                </div>
+            </div>
+            <div class="wa-wuzapi-session" th:if="${wuzapiConfigured}">
+                <div class="wa-session-head">
+                    <div>
+                        <strong>Conexão da sessão WhatsApp</strong>
+                        <small>Conecte a sessão, leia o QR Code e acompanhe o status diretamente pelo Melvora.</small>
+                    </div>
+                    <span id="wuzapi-session-pill" class="wa-session-pill">Consultando...</span>
+                </div>
+                <div class="wa-session-grid">
+                    <div class="wa-session-status">
+                        <div><span>Conexão</span><strong id="wuzapi-connected">—</strong></div>
+                        <div><span>WhatsApp pronto</span><strong id="wuzapi-logged">—</strong></div>
+                        <div><span>Número/JID</span><strong id="wuzapi-jid">—</strong></div>
+                    </div>
+                    <div class="wa-session-actions">
+                        <button type="button" class="button primary" data-wuzapi-action="connect">⚡ Conectar WhatsApp</button>
+                        <button type="button" class="button" data-wuzapi-action="qr">▣ Mostrar QR Code</button>
+                        <button type="button" class="button" data-wuzapi-action="refresh">↻ Atualizar status</button>
+                        <button type="button" class="button" data-wuzapi-action="disconnect">Desconectar</button>
+                        <button type="button" class="button danger" data-wuzapi-action="logout">Encerrar sessão</button>
+                    </div>
+                </div>
+                <div id="wuzapi-qr-area" class="wa-qr-area" hidden>
+                    <div class="wa-qr-copy"><strong>Escaneie o QR Code</strong><small>Abra o WhatsApp no celular → Dispositivos conectados → Conectar dispositivo.</small></div>
+                    <img id="wuzapi-qr" alt="QR Code de conexão do WhatsApp">
+                </div>
+                <div id="wuzapi-session-message" class="wa-session-message" hidden></div>
+            </div>
+        </section>
+
         <section class="wa-panel wa-final-panel">
             <div class="wa-activation">
                 <div class="wa-activation-icon">✓</div>
                 <div>
                     <strong>Ativar envio automático</strong>
-                    <p>Quando ativado, o Melvora processa a fila de comunicações automaticamente.</p>
+                    <p>Quando ativado, o Melvora processa a fila de comunicações automaticamente pelo provedor selecionado.</p>
                 </div>
                 <label class="wa-switch">
                     <input type="checkbox" th:field="*{ativa}">
@@ -156,8 +230,10 @@
             <div class="wa-test-icon">✓</div>
             <div>
                 <h2>Testar conexão</h2>
-                <p th:if="${form.modoIntegracao.name() == 'N8N'}">O Melvora enviará um evento <code>MELVORA_TESTE_CONEXAO</code> para o workflow configurado.</p>
-                <p th:unless="${form.modoIntegracao.name() == 'N8N'}">O Melvora verificará o Phone Number ID diretamente na Cloud API.</p>
+                <p th:if="${form.modoIntegracao.name() == 'META_CLOUD'}">O Melvora verificará o Phone Number ID diretamente na Cloud API.</p>
+                <p th:if="${form.modoIntegracao.name() == 'EVOLUTION_API'}">A conexão com a Evolution API será validada quando o conector da Evolution estiver habilitado.</p>
+                <p th:if="${form.modoIntegracao.name() == 'WUZAPI'}">A conexão com o WuzAPI será validada quando o conector do WuzAPI estiver habilitado.</p>
+                <p th:if="${form.modoIntegracao.name() == 'N8N'}">A configuração n8n anterior permanece disponível somente para compatibilidade.</p>
             </div>
         </div>
         <form method="post" th:action="@{/comunicacao/whatsapp-business/testar}">
@@ -171,42 +247,117 @@
             <div>
                 <span class="wa-step">03</span>
                 <div>
-                    <h2>Como o fluxo n8n funciona</h2>
-                    <p>O Melvora continua sendo o sistema de negócio. O n8n fica responsável pela integração externa.</p>
+                    <h2>Arquitetura do WhatsApp no Melvora</h2>
+                    <p>A regra de negócio continua dentro do Melvora. O provedor escolhido fica responsável pelo transporte das mensagens.</p>
                 </div>
             </div>
         </div>
-        <div class="wa-flow">
-            <div><span>1</span><strong>Melvora</strong><small>Agenda cria a comunicação</small></div>
+        <div class="wa-flow wa-flow-three">
+            <div><span>1</span><strong>Melvora</strong><small>Agenda, templates e fila de comunicação</small></div>
             <i>→</i>
-            <div><span>2</span><strong>n8n</strong><small>Recebe o webhook</small></div>
+            <div><span>2</span><strong>API selecionada</strong><small>Meta Cloud, Evolution API ou WuzAPI</small></div>
             <i>→</i>
-            <div><span>3</span><strong>WhatsApp</strong><small>Envia pela API oficial</small></div>
-            <i>→</i>
-            <div><span>4</span><strong>Melvora</strong><small>Atualiza o status</small></div>
+            <div><span>3</span><strong>WhatsApp</strong><small>Envio e recebimento da mensagem</small></div>
         </div>
-        <div class="wa-guide-note">
-            <strong>Eventos enviados pelo Melvora</strong>
-            <span>MELVORA_WHATSAPP_ENVIAR</span>
-            <span>MELVORA_TESTE_CONEXAO</span>
+        <div class="wa-provider-summary">
+            <span>☁️ <strong>Meta Cloud</strong> — API oficial</span>
+            <span>🔄 <strong>Evolution</strong> — instância própria</span>
+            <span>⚡ <strong>WuzAPI</strong> — sessão própria</span>
         </div>
     </section>
 </section>
 </div>
 
-<script>
+<script th:inline="javascript">
 (function () {
     const radios = document.querySelectorAll('[data-wa-mode]');
     const sections = document.querySelectorAll('[data-wa-section]');
     function refresh() {
         const selected = document.querySelector('[data-wa-mode]:checked');
-        const mode = selected ? selected.dataset.waMode : 'n8n';
+        const mode = selected ? selected.dataset.waMode : 'meta';
         sections.forEach(section => {
             section.hidden = section.dataset.waSection !== mode;
         });
     }
     radios.forEach(radio => radio.addEventListener('change', refresh));
     refresh();
+
+    const csrf = document.querySelector('input[name="_csrf"]');
+    const wuzapiConfigured = /*[[${wuzapiConfigured}]]*/ false;
+    const statusUrl = /*[[@{/comunicacao/whatsapp-business/wuzapi/status}]]*/ '/comunicacao/whatsapp-business/wuzapi/status';
+    const connectUrl = /*[[@{/comunicacao/whatsapp-business/wuzapi/conectar}]]*/ '/comunicacao/whatsapp-business/wuzapi/conectar';
+    const qrUrl = /*[[@{/comunicacao/whatsapp-business/wuzapi/qr}]]*/ '/comunicacao/whatsapp-business/wuzapi/qr';
+    const disconnectUrl = /*[[@{/comunicacao/whatsapp-business/wuzapi/desconectar}]]*/ '/comunicacao/whatsapp-business/wuzapi/desconectar';
+
+    function sessionMessage(text, error) {
+        const box = document.getElementById('wuzapi-session-message');
+        if (!box) return;
+        box.hidden = false;
+        box.className = 'wa-session-message ' + (error ? 'is-error' : 'is-success');
+        box.textContent = text;
+    }
+    function setStatus(data) {
+        const connected = !!data.connected;
+        const logged = !!data.loggedIn;
+        document.getElementById('wuzapi-connected').textContent = connected ? 'Conectado' : 'Desconectado';
+        document.getElementById('wuzapi-logged').textContent = logged ? 'Pronto para uso' : 'Aguardando QR Code';
+        document.getElementById('wuzapi-jid').textContent = data.jid || '—';
+        const pill = document.getElementById('wuzapi-session-pill');
+        pill.textContent = logged ? '● WhatsApp conectado' : (connected ? '● Sessão iniciada' : '○ Desconectado');
+        pill.className = 'wa-session-pill ' + (logged ? 'is-on' : connected ? 'is-warn' : '');
+    }
+    async function wuzapiFetch(url, options) {
+        const opts = Object.assign({headers: {}}, options || {});
+        if (csrf && opts.method && opts.method !== 'GET') opts.headers['X-CSRF-TOKEN'] = csrf.value;
+        const response = await fetch(url, opts);
+        const text = await response.text();
+        let data = {};
+        try { data = text ? JSON.parse(text) : {}; } catch (_) { data = {message: text}; }
+        if (!response.ok) throw new Error(data.message || data.erro || 'Não foi possível concluir a operação.');
+        return data;
+    }
+    async function refreshWuzapiStatus() {
+        if (!wuzapiConfigured) return;
+        try { setStatus(await wuzapiFetch(statusUrl)); }
+        catch (e) { sessionMessage(e.message, true); }
+    }
+    async function connectWuzapi() {
+        try {
+            sessionMessage('Configurando webhook seguro e iniciando a sessão...', false);
+            const data = await wuzapiFetch(connectUrl, {method:'POST'});
+            setStatus(data);
+            sessionMessage('Sessão iniciada. Se o WhatsApp ainda não estiver conectado, abra o QR Code.', false);
+        } catch (e) { sessionMessage(e.message, true); }
+    }
+    async function showWuzapiQr() {
+        try {
+            const data = await wuzapiFetch(qrUrl);
+            document.getElementById('wuzapi-qr').src = data.qrCode;
+            document.getElementById('wuzapi-qr-area').hidden = false;
+            sessionMessage('QR Code carregado. Escaneie pelo WhatsApp.', false);
+        } catch (e) { sessionMessage(e.message, true); }
+    }
+    async function disconnectWuzapi(logout) {
+        try {
+            const url = disconnectUrl + (logout ? '?logout=true' : '?logout=false');
+            const data = await wuzapiFetch(url, {method:'POST'});
+            sessionMessage(data.mensagem || 'Operação concluída.', false);
+            document.getElementById('wuzapi-qr-area').hidden = true;
+            await refreshWuzapiStatus();
+        } catch (e) { sessionMessage(e.message, true); }
+    }
+    document.querySelectorAll('[data-wuzapi-action]').forEach(button => button.addEventListener('click', () => {
+        const action = button.dataset.wuzapiAction;
+        if (action === 'connect') connectWuzapi();
+        if (action === 'qr') showWuzapiQr();
+        if (action === 'refresh') refreshWuzapiStatus();
+        if (action === 'disconnect') disconnectWuzapi(false);
+        if (action === 'logout') disconnectWuzapi(true);
+    }));
+    if (wuzapiConfigured) {
+        refreshWuzapiStatus();
+        window.setInterval(refreshWuzapiStatus, 5000);
+    }
 })();
 </script>
 </body>

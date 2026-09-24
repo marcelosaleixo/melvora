@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Conversa WhatsApp')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar conversation-topbar">
+  <div class="conversation-contact-title">
+    <a class="back-link" th:href="@{/comunicacao/conversas}">← Conversas</a>
+    <span class="eyebrow">ATENDIMENTO</span>
+    <h1 th:text="${cliente != null ? cliente.nome : detalhe.telefone}">Cliente</h1>
+    <p th:text="${detalhe.telefone}">5566999999999</p>
+  </div>
+  <div class="conversation-header-actions">
+    <a class="secondary-button" th:if="${cliente != null}" th:href="${'/clientes/' + cliente.id}">Ficha da cliente</a>
+    <form th:if="${cliente != null}" method="post" th:action="${'/comunicacao/conversas/' + cliente.id + '/marcar-lida'}">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+      <button class="secondary-button" type="submit">✓ Marcar como lida</button>
+    </form>
+  </div>
+</header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+
+<section class="chat-panel">
+  <div class="chat-notice">
+    <span>🔒</span>
+    <div><strong>Conversa protegida por empresa</strong><small>O Melvora mantém as mensagens isoladas pelo tenant e utiliza o provedor WhatsApp configurado pela empresa.</small></div>
+  </div>
+
+  <div class="chat-messages">
+    <div th:if="${pagina == null or pagina.isEmpty()}" class="chat-empty">Nenhuma mensagem nesta conversa.</div>
+    <div th:each="m : ${pagina.content}" class="chat-message" th:classappend="${m.direcao.name() == 'SAIDA' ? ' outgoing' : ' incoming'}">
+      <div class="chat-bubble">
+        <p th:text="${m.mensagem ?: '[Mensagem sem texto]'}">Mensagem</p>
+        <div class="chat-meta">
+          <time th:text="${#temporals.format(m.recebidoEm, 'dd/MM/yyyy HH:mm')}">24/09/2026 14:00</time>
+          <span th:if="${m.direcao.name() == 'SAIDA'}" th:text="${m.lidaEm != null ? '✓✓' : '✓'}" th:classappend="${m.lidaEm != null ? ' read' : ''}">✓</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chat-compose" th:if="${cliente != null and cliente.ativo}">
+    <form method="post" th:action="${'/comunicacao/conversas/' + cliente.id + '/enviar'}">
+      <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+      <textarea name="mensagem" maxlength="4000" required placeholder="Digite uma mensagem..." aria-label="Mensagem"></textarea>
+      <div class="chat-compose-footer">
+        <small>Até 4.000 caracteres. O envio usa o provedor configurado em WhatsApp Business.</small>
+        <button class="primary-button" type="submit">Enviar mensagem →</button>
+      </div>
+    </form>
+  </div>
+  <div class="module-warning" th:if="${cliente == null}">
+    <strong>Número ainda não vinculado a uma cliente</strong>
+    <p>Esta conversa foi recebida, mas o telefone não corresponde a uma cliente ativa cadastrada no Melvora.</p>
+    <a class="secondary-button" th:href="@{/clientes}">Cadastrar cliente</a>
+  </div>
+  <div class="module-warning" th:if="${cliente != null and !cliente.ativo}">
+    <strong>Cliente inativa</strong>
+    <p>O envio foi bloqueado porque a cliente está inativa.</p>
+  </div>
+
+  <div class="pagination" th:if="${pagina != null and pagina.totalPages > 1}">
+    <a class="pagination-link" th:if="${cliente != null}" th:classappend="${pagina.last ? ' disabled' : ''}"
+       th:href="${'/comunicacao/conversas/' + cliente.id + '?page=' + (pagina.number + 1)}">Mensagens mais antigas →</a>
+    <a class="pagination-link" th:if="${cliente == null}" th:classappend="${pagina.last ? ' disabled' : ''}"
+       th:href="${'/comunicacao/conversas/numero/' + detalhe.telefone + '?page=' + (pagina.number + 1)}">Mensagens mais antigas →</a>
+  </div>
+</section>
+</main>
+</th:block>
+</body>
+</html>

@@ -8,7 +8,7 @@
   <div><span class="eyebrow">COMUNICAÇÃO</span><h1>WhatsApp com clientes</h1><p>Envie confirmações, lembretes e mensagens sem sair do fluxo do Melvora.</p></div>
 </header>
 <div class="panel" sec:authorize="hasRole('ADMIN')">
-  <div class="panel-heading"><div><span class="section-kicker">CONFIGURAÇÃO</span><h2>Templates de WhatsApp</h2><p class="section-note">Crie e personalize mensagens reutilizáveis para sua empresa.</p></div><div class="table-actions"><a class="primary-button" th:href="@{/comunicacao/automacao}">Automação</a><a class="primary-button" th:href="@{/comunicacao/templates}">Templates</a></div></div>
+  <div class="panel-heading"><div><span class="section-kicker">CONFIGURAÇÃO</span><h2>Templates de WhatsApp</h2><p class="section-note">Crie e personalize mensagens reutilizáveis para sua empresa.</p></div><div class="table-actions"><a class="primary-button" th:href="@{/comunicacao/conversas}">Conversas</a><a class="primary-button" th:href="@{/comunicacao/automacao}">Automação</a><a class="primary-button" th:href="@{/comunicacao/automacao-inteligente}">Automação inteligente</a><a class="primary-button" th:href="@{/comunicacao/templates}">Templates</a></div></div>
 </div>
 <th:block th:replace="~{fragments/feedback :: messages}"></th:block>
 

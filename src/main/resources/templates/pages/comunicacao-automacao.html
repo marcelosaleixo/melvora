@@ -12,6 +12,15 @@
 <div class="form-section"><h3>Confirmação</h3><label><input type="checkbox" th:field="*{confirmacaoAtiva}"> Ativar confirmação automática</label><label>Minutos antes<input type="number" min="15" max="10080" th:field="*{confirmacaoMinutosAntes}"></label></div>
 <div class="form-section"><h3>Lembrete</h3><label><input type="checkbox" th:field="*{lembreteAtivo}"> Ativar lembrete automático</label><label>Minutos antes<input type="number" min="15" max="10080" th:field="*{lembreteMinutosAntes}"></label></div>
 <div class="form-section"><h3>Pós-atendimento</h3><label><input type="checkbox" th:field="*{posAtendimentoAtivo}"> Ativar mensagem pós-atendimento</label><label>Minutos depois<input type="number" min="0" max="10080" th:field="*{posAtendimentoMinutosDepois}"></label></div>
+<div class="form-section"><h3>Retenção</h3><label><input type="checkbox" th:field="*{retencaoAtiva}"> Ativar oportunidades de retorno</label><label>Dias sem retorno<input type="number" min="15" max="365" th:field="*{retencaoDiasSemRetorno}"></label><label>Mensagem<input type="text" maxlength="2000" th:field="*{retencaoMensagem}"></label>
+<label><input type="checkbox" th:field="*{retencaoAutomaticaAtiva}"> Permitir envio automático de retenção</label>
+<div class="form-grid">
+<label>Cooldown entre mensagens (dias)<input type="number" min="1" max="365" th:field="*{retencaoCooldownDias}"></label>
+<label>Início da janela<input type="time" th:field="*{retencaoHorarioInicio}"></label>
+<label>Fim da janela<input type="time" th:field="*{retencaoHorarioFim}"></label>
+<label>Máximo de envios por dia<input type="number" min="1" max="500" th:field="*{retencaoMaxEnviosDia}"></label>
+</div>
+<p class="section-note">A automação exige consentimento explícito por cliente, respeita opt-out, cooldown, janela de horário e limite diário. Variáveis: {cliente}, {dias}, {ultima_data}.</p></div>
 <div><button class="primary-button" type="submit">Salvar automação</button></div>
 </form>
 </section>

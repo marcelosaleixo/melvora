@@ -42,6 +42,30 @@ public class ConfiguracaoWhatsAppBusiness {
     @Column(name = "n8n_token_encrypted", length = 4096)
     private String n8nTokenEncrypted;
 
+    @Column(name = "evolution_base_url", length = 500)
+    private String evolutionBaseUrl;
+
+    @Column(name = "evolution_api_key_encrypted", length = 4096)
+    private String evolutionApiKeyEncrypted;
+
+    @Column(name = "evolution_instance", length = 150)
+    private String evolutionInstance;
+
+    @Column(name = "wuzapi_base_url", length = 500)
+    private String wuzapiBaseUrl;
+
+    @Column(name = "wuzapi_token_encrypted", length = 4096)
+    private String wuzapiTokenEncrypted;
+
+    @Column(name = "wuzapi_integration_key", length = 100, unique = true)
+    private String wuzapiIntegrationKey;
+
+    @Column(name = "wuzapi_hmac_secret_encrypted", length = 4096)
+    private String wuzapiHmacSecretEncrypted;
+
+    @Column(name = "wuzapi_phone_jid", length = 200)
+    private String wuzapiPhoneJid;
+
     @Column(nullable = false)
     private boolean ativa = false;
 
@@ -63,6 +87,14 @@ public class ConfiguracaoWhatsAppBusiness {
     public String getN8nWebhookPath() { return n8nWebhookPath; }
     public String getN8nIntegrationKey() { return n8nIntegrationKey; }
     public String getN8nTokenEncrypted() { return n8nTokenEncrypted; }
+    public String getEvolutionBaseUrl() { return evolutionBaseUrl; }
+    public String getEvolutionApiKeyEncrypted() { return evolutionApiKeyEncrypted; }
+    public String getEvolutionInstance() { return evolutionInstance; }
+    public String getWuzapiBaseUrl() { return wuzapiBaseUrl; }
+    public String getWuzapiTokenEncrypted() { return wuzapiTokenEncrypted; }
+    public String getWuzapiIntegrationKey() { return wuzapiIntegrationKey; }
+    public String getWuzapiHmacSecretEncrypted() { return wuzapiHmacSecretEncrypted; }
+    public String getWuzapiPhoneJid() { return wuzapiPhoneJid; }
     public boolean isAtiva() { return ativa; }
 
     public void atualizarMeta(String phoneNumberId, String accessTokenEncrypted, String apiVersion,
@@ -83,5 +115,26 @@ public class ConfiguracaoWhatsAppBusiness {
         this.n8nIntegrationKey = n8nIntegrationKey;
         this.n8nTokenEncrypted = n8nTokenEncrypted;
         this.ativa = ativa;
+    }
+
+    public void atualizarEvolution(String baseUrl, String apiKeyEncrypted, String instance, boolean ativa) {
+        this.modoIntegracao = WhatsAppIntegrationMode.EVOLUTION_API;
+        this.evolutionBaseUrl = baseUrl;
+        this.evolutionApiKeyEncrypted = apiKeyEncrypted;
+        this.evolutionInstance = instance;
+        this.ativa = ativa;
+    }
+
+    public void atualizarWuzapi(String baseUrl, String tokenEncrypted, String integrationKey, String hmacSecretEncrypted, boolean ativa) {
+        this.modoIntegracao = WhatsAppIntegrationMode.WUZAPI;
+        this.wuzapiBaseUrl = baseUrl;
+        this.wuzapiTokenEncrypted = tokenEncrypted;
+        this.wuzapiIntegrationKey = integrationKey;
+        this.wuzapiHmacSecretEncrypted = hmacSecretEncrypted;
+        this.ativa = ativa;
+    }
+
+    public void definirWuzapiPhoneJid(String phoneJid) {
+        this.wuzapiPhoneJid = phoneJid;
     }
 }

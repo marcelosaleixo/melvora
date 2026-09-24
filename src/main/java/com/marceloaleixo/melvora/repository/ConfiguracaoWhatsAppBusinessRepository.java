@@ -9,4 +9,5 @@ public interface ConfiguracaoWhatsAppBusinessRepository extends JpaRepository<Co
     Optional<ConfiguracaoWhatsAppBusiness> findByEmpresaId(Long empresaId);
     List<ConfiguracaoWhatsAppBusiness> findByAtivaTrue();
     Optional<ConfiguracaoWhatsAppBusiness> findByN8nIntegrationKey(String n8nIntegrationKey);
+    Optional<ConfiguracaoWhatsAppBusiness> findByWuzapiIntegrationKey(String wuzapiIntegrationKey);
 }

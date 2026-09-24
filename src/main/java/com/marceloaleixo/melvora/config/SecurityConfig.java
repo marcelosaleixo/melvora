@@ -32,9 +32,10 @@ public class SecurityConfig {
             TenantFilter tenantFilter) throws Exception {
 
         http
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/webhooks/**"))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                    "/login", "/css/**", "/js/**", "/images/**", "/error", "/webhooks/whatsapp", "/webhooks/n8n/whatsapp/**"
+                    "/login", "/avaliacao/**", "/css/**", "/js/**", "/images/**", "/error", "/webhooks/whatsapp", "/webhooks/n8n/whatsapp/**", "/webhooks/wuzapi/**"
                 ).permitAll()
                 .requestMatchers("/super-admin/**").hasRole("SUPER_ADMIN")
                 .anyRequest().authenticated()

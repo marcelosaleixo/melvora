@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Disponibilidade da agenda')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar">
+  <div>
+    <span class="eyebrow">AGENDA</span>
+    <h1>Disponibilidade</h1>
+    <p>Defina quando a equipe pode receber novos horários pelo WhatsApp.</p>
+  </div>
+  <a class="secondary-button" th:href="@{/agenda}">← Voltar para agenda</a>
+</header>
+
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+
+<section class="panel availability-panel">
+  <div class="panel-heading">
+    <div>
+      <span class="section-kicker">HORÁRIO DE FUNCIONAMENTO</span>
+      <h2>Janela de atendimento</h2>
+    </div>
+  </div>
+
+  <div class="availability-notice">
+    <div class="availability-notice-icon" aria-hidden="true">🔒</div>
+    <div>
+      <strong>Apenas consulta nesta fase</strong>
+      <p>A disponibilidade considera os horários configurados e os conflitos reais da agenda. A cliente não cria nem confirma um horário automaticamente nesta etapa.</p>
+    </div>
+  </div>
+
+  <div class="availability-grid">
+    <article class="availability-day" th:each="d : ${dias}" th:classappend="${d.ativo ? ' is-active' : ''}">
+      <form method="post" th:action="@{/agenda/disponibilidade}">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+        <input type="hidden" name="diaSemana" th:value="${d.dia}">
+
+        <div class="availability-day-head">
+          <div class="availability-day-name">
+            <span class="availability-day-dot" aria-hidden="true"></span>
+            <strong th:text="${d.nome}">segunda-feira</strong>
+          </div>
+          <span class="availability-status" th:text="${d.ativo ? 'Ativo' : 'Fechado'}">Ativo</span>
+        </div>
+
+        <div class="availability-fields">
+          <div class="availability-field">
+            <label th:for="${'inicio-' + d.dia}">Início</label>
+            <input th:id="${'inicio-' + d.dia}" type="time" name="horaInicio" th:value="${d.inicio}" required>
+          </div>
+          <div class="availability-field">
+            <label th:for="${'fim-' + d.dia}">Fim</label>
+            <input th:id="${'fim-' + d.dia}" type="time" name="horaFim" th:value="${d.fim}" required>
+          </div>
+          <div class="availability-field">
+            <label th:for="${'intervalo-' + d.dia}">Intervalo</label>
+            <input th:id="${'intervalo-' + d.dia}" type="number" name="intervaloMinutos" min="5" max="240" step="5" th:value="${d.intervalo}" required>
+          </div>
+        </div>
+
+        <div class="availability-day-footer">
+          <label class="availability-toggle">
+            <input type="checkbox" name="ativo" value="true" th:checked="${d.ativo}">
+            <span>Receber novos horários neste dia</span>
+          </label>
+          <button class="primary-button" type="submit">Salvar alterações</button>
+        </div>
+      </form>
+    </article>
+  </div>
+
+  <p class="availability-help">O intervalo define de quantos em quantos minutos o motor de disponibilidade poderá apresentar horários. A duração do serviço continua sendo considerada separadamente.</p>
+</section>
+
+<section class="info-grid">
+  <div class="info-card"><span>Conflitos</span><strong>Profissional + cliente</strong><p>O sistema bloqueia sobreposição de horários para o mesmo profissional e para a mesma cliente.</p></div>
+  <div class="info-card"><span>Segurança</span><strong>Empresa protegida</strong><p>A configuração pertence à empresa autenticada e não pode ser alterada por outra empresa.</p></div>
+</section>
+</main>
+</th:block>
+</body>
+</html>

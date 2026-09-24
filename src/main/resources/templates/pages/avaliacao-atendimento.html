@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Avaliação do atendimento')}"></head>
+<body class="public-page">
+<main class="public-evaluation">
+    <section class="evaluation-card">
+        <div class="brand-mark">M</div>
+        <span class="eyebrow">MELVORA</span>
+        <h1>Como foi seu atendimento?</h1>
+        <p class="evaluation-intro" th:if="${avaliacao != null}">Olá, <strong th:text="${avaliacao.cliente.nome}">Cliente</strong>! Sua opinião ajuda nossa equipe a melhorar cada vez mais.</p>
+
+        <div class="feedback success" th:if="${sucesso}" th:text="${sucesso}"></div>
+        <div class="feedback error" th:if="${erro}" th:text="${erro}"></div>
+
+        <div th:if="${respondida}" class="evaluation-thanks">
+            <div class="evaluation-stars">★★★★★</div>
+            <h2>Feedback recebido 💜</h2>
+            <p>Obrigado por compartilhar sua experiência. Seu feedback é muito importante para nós.</p>
+        </div>
+
+        <form th:if="${!respondida}" method="post" class="evaluation-form" th:action="${'/avaliacao/' + avaliacao.publicToken}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" th:if="${_csrf != null}">
+            <fieldset>
+                <legend>Escolha uma nota</legend>
+                <div class="rating-options">
+                    <label th:each="n : ${#numbers.sequence(1,5)}" class="rating-option">
+                        <input type="radio" name="nota" th:value="${n}" required>
+                        <span th:text="${n + ' ★'}">5 ★</span>
+                    </label>
+                </div>
+            </fieldset>
+            <label>Comentário <span class="optional">opcional</span>
+                <textarea name="comentario" maxlength="1000" rows="5" placeholder="Conte como foi sua experiência..."></textarea>
+            </label>
+            <button type="submit" class="primary-button">Enviar avaliação</button>
+        </form>
+
+        <div class="evaluation-meta" th:if="${avaliacao != null}">
+            <span th:text="${avaliacao.atendimento.servicoNome != null ? avaliacao.atendimento.servicoNome : avaliacao.atendimento.tipo}">Serviço</span>
+            <span>•</span>
+            <span th:text="${avaliacao.profissional.nome}">Profissional</span>
+        </div>
+    </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Campanhas de relacionamento')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar"><div><span class="eyebrow">COMUNICAÇÃO</span><h1>Campanhas de relacionamento</h1><p>Crie públicos segmentados e envie mensagens pelo provedor WhatsApp configurado.</p></div></header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+<section class="info-grid">
+  <div class="info-card"><span>Consentimento</span><strong>Obrigatório</strong><p>Somente clientes autorizadas recebem campanhas.</p></div>
+  <div class="info-card"><span>Opt-out</span><strong>Respeitado</strong><p>Clientes que optaram por sair ficam bloqueadas.</p></div>
+  <div class="info-card"><span>Cooldown</span><strong>Por campanha</strong><p>Evita mensagens repetidas em sequência.</p></div>
+</section>
+<section class="panel">
+<div class="panel-heading"><div><span class="section-kicker">NOVA CAMPANHA</span><h2>Segmentar clientes</h2><p class="section-note">Nesta fase o disparo é manual. O sistema não envia campanhas automaticamente.</p></div></div>
+<form method="post" th:action="@{/comunicacao/campanhas}" class="form-grid">
+<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+<label>Nome da campanha<input name="nome" maxlength="120" required placeholder="Ex.: Retorno Mega Hair"></label>
+<label>Segmento<select name="segmento" required><option th:each="s : ${segmentos}" th:value="${s}" th:text="${s == T(com.marceloaleixo.melvora.entity.CampanhaComunicacao.Segmento).INATIVAS ? 'Clientes inativas' : (s == T(com.marceloaleixo.melvora.entity.CampanhaComunicacao.Segmento).SEM_PROXIMO_AGENDAMENTO ? 'Sem próximo agendamento' : 'Realizaram determinado serviço')}" >Clientes inativas</option></select></label>
+<label>Dias sem retorno <input type="number" name="diasSemRetorno" min="1" max="365" value="60"></label>
+<label>Serviço <select name="servicoId"><option value="">Selecione quando o segmento for por serviço</option><option th:each="s : ${servicos}" th:value="${s.id}" th:text="${s.nome}">Mega Hair</option></select></label>
+<label>Cooldown (dias)<input type="number" name="cooldownDias" min="1" max="365" value="30"></label>
+<label class="form-grid-full">Mensagem<textarea name="mensagem" maxlength="4000" rows="6" required placeholder="Olá, {cliente}! Temos uma novidade para você na {empresa}. 💜"></textarea></label>
+<div class="form-grid-full section-note">Variáveis: <code>{cliente}</code>, <code>{empresa}</code> e <code>{servico}</code>.</div>
+<div class="form-grid-full"><button class="primary-button" type="submit">Criar campanha</button></div>
+</form>
+</section>
+<section class="panel">
+<div class="panel-heading"><div><span class="section-kicker">CAMPANHAS</span><h2>Campanhas da empresa</h2></div></div>
+<div class="table-wrap" th:if="${!campanhas.isEmpty()}"><table><thead><tr><th>Campanha</th><th>Segmento</th><th>Status</th><th>Cooldown</th><th>Criada em</th><th>Ação</th></tr></thead><tbody>
+<tr th:each="c : ${campanhas}"><td><strong th:text="${c.nome}">Campanha</strong><div class="section-note" th:text="${c.servico != null ? c.servico.nome : ''}"></div></td><td th:text="${c.segmento}">INATIVAS</td><td><span class="status-badge" th:text="${c.status}">RASCUNHO</span></td><td th:text="${c.cooldownDias + ' dias'}">30 dias</td><td th:text="${#temporals.format(c.createdAt,'dd/MM/yyyy HH:mm')}">24/09/2026</td><td><form th:if="${c.status == T(com.marceloaleixo.melvora.entity.CampanhaComunicacao.Status).RASCUNHO}" method="post" th:action="${'/comunicacao/campanhas/' + c.id + '/enviar'}"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><button class="table-action" type="submit" onclick="return confirm('Enviar esta campanha agora para as clientes elegíveis?')">Enviar agora</button></form><span class="section-note" th:unless="${c.status == T(com.marceloaleixo.melvora.entity.CampanhaComunicacao.Status).RASCUNHO}">Sem ação</span></td></tr>
+</tbody></table></div>
+<div class="empty-state" th:if="${campanhas.isEmpty()}">Nenhuma campanha criada.</div>
+</section>
+</main>
+</th:block>
+</body></html>

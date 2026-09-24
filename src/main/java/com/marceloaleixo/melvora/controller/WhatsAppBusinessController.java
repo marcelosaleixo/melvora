@@ -39,7 +39,9 @@ public class WhatsAppBusinessController {
         adicionarModelo(model, cfg, new ComunicacaoRequests.WhatsAppBusinessForm(
                 cfg.getModoIntegracao(),
                 value(cfg.getPhoneNumberId()), "", value(cfg.getApiVersion()), value(cfg.getApiBaseUrl()),
-                value(cfg.getN8nBaseUrl()), value(cfg.getN8nWebhookPath()), "", cfg.isAtiva()));
+                value(cfg.getN8nBaseUrl()), value(cfg.getN8nWebhookPath()), "",
+                value(cfg.getEvolutionBaseUrl()), "", value(cfg.getEvolutionInstance()),
+                value(cfg.getWuzapiBaseUrl()), "", cfg.isAtiva()));
         return "pages/whatsapp-business";
     }
 
@@ -85,13 +87,26 @@ public class WhatsAppBusinessController {
     private void adicionarModelo(Model model, com.marceloaleixo.melvora.entity.ConfiguracaoWhatsAppBusiness cfg,
                                  ComunicacaoRequests.WhatsAppBusinessForm form) {
         model.addAttribute("form", form);
-        model.addAttribute("configurado", cfg.getModoIntegracao() == WhatsAppIntegrationMode.META_CLOUD
-                ? !blank(cfg.getAccessTokenEncrypted()) : !blank(cfg.getN8nTokenEncrypted()));
+        boolean configurado = switch (cfg.getModoIntegracao()) {
+            case META_CLOUD -> !blank(cfg.getAccessTokenEncrypted());
+            case EVOLUTION_API -> !blank(cfg.getEvolutionApiKeyEncrypted());
+            case WUZAPI -> !blank(cfg.getWuzapiTokenEncrypted());
+            case N8N -> !blank(cfg.getN8nTokenEncrypted());
+        };
+        model.addAttribute("configurado", configurado);
         model.addAttribute("n8nConfigurado", cfg.getModoIntegracao() == WhatsAppIntegrationMode.N8N && !blank(cfg.getN8nIntegrationKey()));
+        model.addAttribute("legacyN8n", cfg.getModoIntegracao() == WhatsAppIntegrationMode.N8N);
         String callbackPath = service.callbackPath(cfg);
         model.addAttribute("n8nCallbackPath", callbackPath);
         model.addAttribute("n8nCallbackUrl", publicBaseUrl.isBlank() ? callbackPath : publicBaseUrl + callbackPath);
-        model.addAttribute("integrationModes", WhatsAppIntegrationMode.values());
+        String wuzapiCallbackPath = service.wuzapiWebhookPath(cfg);
+        model.addAttribute("wuzapiCallbackPath", wuzapiCallbackPath);
+        model.addAttribute("wuzapiCallbackUrl", publicBaseUrl.isBlank() ? wuzapiCallbackPath : publicBaseUrl + wuzapiCallbackPath);
+        model.addAttribute("wuzapiConfigured", cfg.getModoIntegracao() == WhatsAppIntegrationMode.WUZAPI && !blank(cfg.getWuzapiTokenEncrypted()));
+        model.addAttribute("integrationModes", java.util.List.of(
+                WhatsAppIntegrationMode.META_CLOUD,
+                WhatsAppIntegrationMode.EVOLUTION_API,
+                WhatsAppIntegrationMode.WUZAPI));
         model.addAttribute("activePage", "whatsapp-business");
     }
 
