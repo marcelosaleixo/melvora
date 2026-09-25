@@ -48,7 +48,7 @@ MELVORA_BOOTSTRAP_ENABLED=false
 
 Não use `ddl-auto=update`. O projeto utiliza Flyway e `ddl-auto=validate`.
 
-No primeiro start, as migrations `V1...V39` devem ser executadas automaticamente.
+No primeiro start, as migrations `V1...V40` devem ser executadas automaticamente. A V40 é uma migration de reparo idempotente para bancos legados em que a V30 aparece como aplicada no histórico, mas a tabela `agenda_horarios_funcionamento` não existe fisicamente.
 
 ## 5. Build
 

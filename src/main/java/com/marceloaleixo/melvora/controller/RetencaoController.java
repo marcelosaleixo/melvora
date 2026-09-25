@@ -10,7 +10,6 @@ import com.marceloaleixo.melvora.service.WhatsAppService;
 import com.marceloaleixo.melvora.tenant.TenantContext;
 import java.time.format.DateTimeFormatter;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,7 +48,7 @@ public class RetencaoController {
         Long empresaId = TenantContext.getRequired();
         Empresa empresa = empresaRepository.findById(empresaId).orElseThrow();
         var config = comunicacao.configuracao(empresaId, empresa);
-        var oportunidades = comunicacao.oportunidadesRetencao(empresaId, config.getRetencaoDiasSemRetorno(), PageRequest.of(0, 100, Sort.by("nome").ascending()));
+        var oportunidades = comunicacao.oportunidadesRetencao(empresaId, config.getRetencaoDiasSemRetorno(), PageRequest.of(0, 100));
         model.addAttribute("config", config);
         model.addAttribute("oportunidades", oportunidades);
         model.addAttribute("activePage", "retencao");

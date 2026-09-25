@@ -1,0 +1,4 @@
+# Fallback caso o EasyPanel seja configurado acidentalmente com Nixpacks.
+# O caminho recomendado para produção continua sendo o Dockerfile do projeto.
+[variables]
+NIXPACKS_JDK_VERSION = "21"

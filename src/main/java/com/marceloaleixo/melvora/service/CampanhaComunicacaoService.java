@@ -104,7 +104,7 @@ public class CampanhaComunicacaoService {
 
     private List<Long> candidatos(Long empresaId, CampanhaComunicacao.Segmento segmento, Integer dias, Long servicoId) {
         return switch(segmento) {
-            case INATIVAS -> atendimentoRepository.listarOportunidadesRetencao(empresaId, LocalDateTime.now().minusDays(dias==null?60:dias), org.springframework.data.domain.PageRequest.of(0,500)).stream().map(r -> (Long)r[0]).toList();
+            case INATIVAS -> atendimentoRepository.buscarOportunidadesRetencaoV2(empresaId, LocalDateTime.now().minusDays(dias==null?60:dias), org.springframework.data.domain.PageRequest.of(0,500)).stream().map(r -> (Long)r[0]).toList();
             case SEM_PROXIMO_AGENDAMENTO -> clienteRepository.idsSemProximoAgendamento(empresaId);
             case SERVICO_REALIZADO -> {
                 Servico s=servicoRepository.findByIdAndEmpresaId(servicoId,empresaId).orElseThrow(() -> new RegraNegocioException("Serviço não encontrado."));

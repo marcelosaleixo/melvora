@@ -5,6 +5,7 @@ import com.marceloaleixo.melvora.service.ModuloAcessoService;
 import com.marceloaleixo.melvora.tenant.TenantContext;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -14,8 +15,17 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class WebViewModelAdvice {
     private final ModuloAcessoService moduloAcessoService;
 
+    @Value("${melvora.environment:DEVELOPMENT}")
+    private String melvoraEnvironment;
+
     public WebViewModelAdvice(ModuloAcessoService moduloAcessoService) {
         this.moduloAcessoService = moduloAcessoService;
+    }
+
+    @ModelAttribute("melvoraEnvironment")
+    public String melvoraEnvironment() {
+        if (melvoraEnvironment == null || melvoraEnvironment.isBlank()) return "DEVELOPMENT";
+        return melvoraEnvironment.trim().toUpperCase();
     }
 
     @ModelAttribute("activePage")

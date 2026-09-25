@@ -182,7 +182,7 @@ public class ComunicacaoAutomacaoService {
     @Transactional(readOnly = true)
     public List<com.marceloaleixo.melvora.dto.RetencaoData.Oportunidade> oportunidadesRetencao(Long empresaId, int diasSemRetorno, org.springframework.data.domain.Pageable pageable) {
         LocalDateTime limite = LocalDateTime.now().minusDays(diasSemRetorno);
-        return atendimentoRepository.listarOportunidadesRetencao(empresaId, limite, pageable).stream().map(row -> {
+        return atendimentoRepository.buscarOportunidadesRetencaoV2(empresaId, limite, pageable).stream().map(row -> {
             LocalDateTime ultimo = (LocalDateTime) row[3];
             long dias = java.time.temporal.ChronoUnit.DAYS.between(ultimo.toLocalDate(), LocalDateTime.now().toLocalDate());
             String telefone = (String) row[2];

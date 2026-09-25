@@ -10,68 +10,156 @@
         <span class="mobile-header-spacer" aria-hidden="true"></span>
     </header>
     <div class="mobile-menu-overlay" data-mobile-menu-close aria-hidden="true"></div>
-<aside id="melvoraSidebar" class="sidebar">
-    <div class="sidebar-inner">
-        <a class="brand" th:href="@{/dashboard}" aria-label="Ir para o dashboard">
-            <span class="brand-mark" aria-hidden="true">M</span>
-            <span class="brand-copy"><strong>Melvora</strong><small>Beauty Management</small></span>
-        </a>
 
-        <nav class="nav" aria-label="Navegação principal">
-            <a class="nav-link" th:classappend="${activePage == 'dashboard' ? ' active' : ''}" th:href="@{/dashboard}"><span aria-hidden="true">📊</span><span>Dashboard</span></a>
-            <th:block sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL','RECEPCIONISTA')">
-                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).CLIENTES)}" th:classappend="${activePage == 'clientes' ? ' active' : ''}" th:href="@{/clientes}"><span aria-hidden="true">👩</span><span>Clientes</span></a>
-            </th:block>
-            <th:block sec:authorize="hasRole('ADMIN')">
-                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).PRODUTOS)}" th:classappend="${activePage == 'produtos' ? ' active' : ''}" th:href="@{/produtos}"><span aria-hidden="true">🛍️</span><span>Produtos</span></a>
-            </th:block>
-            <th:block sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL')">
-                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).ESTOQUE)}" th:classappend="${activePage == 'estoque' ? ' active' : ''}" th:href="@{/estoque}"><span aria-hidden="true">📦</span><span>Estoque</span></a>
-                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).MEGA_HAIR)}" th:classappend="${activePage == 'mega-hair' ? ' active' : ''}" th:href="@{/mega-hair}"><span aria-hidden="true">💇</span><span>Mega Hair</span></a>
-            </th:block>
-            <th:block sec:authorize="hasAnyRole('ADMIN','RECEPCIONISTA')">
-                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).FINANCEIRO)}" th:classappend="${activePage == 'financeiro' ? ' active' : ''}" th:href="@{/financeiro}"><span aria-hidden="true">💰</span><span>Financeiro</span></a>
-            </th:block>
-            <th:block sec:authorize="hasRole('ADMIN')">
-                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).SERVICOS)}" th:classappend="${activePage == 'servicos' ? ' active' : ''}" th:href="@{/servicos}"><span aria-hidden="true">✂️</span><span>Serviços</span></a>
-            </th:block>
-            <th:block sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL','RECEPCIONISTA')">
-                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).HISTORICO)}" th:classappend="${activePage == 'atendimentos' ? ' active' : ''}" th:href="@{/atendimentos}"><span aria-hidden="true">📋</span><span>Atendimentos</span></a>
-            </th:block>
-            <th:block sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL','RECEPCIONISTA')">
-                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).AGENDA)}" th:classappend="${activePage == 'agenda' ? ' active' : ''}" th:href="@{/agenda}"><span aria-hidden="true">📅</span><span>Agenda</span></a>
-                <a class="nav-link" sec:authorize="hasRole('ADMIN')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).AGENDA)}" th:classappend="${activePage == 'agenda-disponibilidade' ? ' active' : ''}" th:href="@{/agenda/disponibilidade}"><span aria-hidden="true">🕒</span><span>Disponibilidade</span></a>
-            </th:block>
-            <th:block sec:authorize="hasRole('ADMIN')">
-                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).EQUIPE)}" th:classappend="${activePage == 'usuarios' ? ' active' : ''}" th:href="@{/usuarios}"><span aria-hidden="true">👥</span><span>Equipe</span></a>
-            </th:block>
-            <th:block sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL')">
-                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMISSOES)}" th:classappend="${activePage == 'comissoes' ? ' active' : ''}" th:href="@{/comissoes}"><span aria-hidden="true">🏆</span><span>Comissões</span></a>
-            </th:block>
-            <th:block sec:authorize="hasRole('ADMIN')">
-                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).RELATORIOS)}" th:classappend="${activePage == 'relatorios' ? ' active' : ''}" th:href="@{/relatorios}"><span aria-hidden="true">📊</span><span>Relatórios</span></a>
-            </th:block>
-            <th:block sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL','RECEPCIONISTA')">
-                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMUNICACAO)}" th:classappend="${activePage == 'comunicacao' ? ' active' : ''}" th:href="@{/comunicacao}"><span aria-hidden="true">💬</span><span>WhatsApp</span></a>
-                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMUNICACAO)}" th:classappend="${activePage == 'conversas' ? ' active' : ''}" th:href="@{/comunicacao/conversas}"><span aria-hidden="true">💬</span><span>Conversas</span></a>
-                <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMUNICACAO)}" th:classappend="${activePage == 'automacao' ? ' active' : ''}" th:href="@{/comunicacao/automacao}"><span aria-hidden="true">⚙️</span><span>Automação</span></a>
-                <a class="nav-link" sec:authorize="hasRole('ADMIN')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMUNICACAO)}" th:classappend="${activePage == 'whatsapp-business' ? ' active' : ''}" th:href="@{/comunicacao/whatsapp-business}"><span aria-hidden="true">📲</span><span>WhatsApp Business</span></a>
-            </th:block>
-            <a class="nav-link" sec:authorize="hasAnyRole('ADMIN','GERENTE')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMUNICACAO)}" th:classappend="${activePage == 'avaliacoes' ? ' active' : ''}" th:href="@{/comunicacao/avaliacoes}"><span aria-hidden="true">⭐</span><span>Avaliações</span></a>
-            <a class="nav-link" sec:authorize="hasAnyRole('ADMIN','GERENTE')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMUNICACAO)}" th:classappend="${activePage == 'satisfacao' ? ' active' : ''}" th:href="@{/comunicacao/avaliacoes/dashboard}"><span aria-hidden="true">📈</span><span>Satisfação</span></a>
-            <a class="nav-link" sec:authorize="hasRole('ADMIN')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMUNICACAO)}" th:classappend="${activePage == 'retencao' ? ' active' : ''}" th:href="@{/comunicacao/retencao}"><span aria-hidden="true">💜</span><span>Retenção</span></a>
-            <a class="nav-link" sec:authorize="hasRole('ADMIN')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMUNICACAO)}" th:classappend="${activePage == 'campanhas' ? ' active' : ''}" th:href="@{/comunicacao/campanhas}"><span aria-hidden="true">📣</span><span>Campanhas</span></a>
-            <a class="nav-link" th:classappend="${activePage == 'empresas' ? ' active' : ''}" th:href="@{/empresas}" sec:authorize="hasRole('SUPER_ADMIN')"><span aria-hidden="true">🏢</span><span>Empresas</span></a>
-            <a class="nav-link" th:classappend="${activePage == 'usuarios' ? ' active' : ''}" th:href="@{/super-admin/usuarios}" sec:authorize="hasRole('SUPER_ADMIN')"><span aria-hidden="true">🔐</span><span>Usuários</span></a>
-        </nav>
+    <aside id="melvoraSidebar" class="sidebar">
+        <div class="sidebar-inner">
+            <a class="brand" th:href="@{/dashboard}" aria-label="Ir para o dashboard">
+                <span class="brand-mark" aria-hidden="true">M</span>
+                <span class="brand-copy"><strong>Melvora</strong><small>Beauty Management</small></span>
+            </a>
+            <div class="environment-badge" th:classappend="${melvoraEnvironment == 'PRODUCTION'} ? 'production' : (${melvoraEnvironment == 'STAGING'} ? 'staging' : 'development')" role="status" aria-label="Ambiente do sistema">
+                <span class="environment-dot" aria-hidden="true"></span>
+                <span th:text="${melvoraEnvironment == 'PRODUCTION'} ? 'PRODUÇÃO' : (${melvoraEnvironment == 'STAGING'} ? 'HOMOLOGAÇÃO' : 'DESENVOLVIMENTO')">DESENVOLVIMENTO</span>
+            </div>
 
-        <div class="sidebar-footer">
-            <div class="security-badge" role="status"><span aria-hidden="true">🔐</span><div><strong>Tenant protegido</strong><small>Dados isolados por empresa.</small></div></div>
-            <form method="post" th:action="@{/logout}">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                <button class="logout-button" type="submit">Sair</button>
-            </form>
+            <nav class="nav" aria-label="Navegação principal">
+                <!-- VISÃO GERAL -->
+                <section class="nav-group nav-group-single">
+                    <a class="nav-link" th:classappend="${activePage == 'dashboard' ? ' active' : ''}" th:href="@{/dashboard}">
+                        <span aria-hidden="true">📊</span><span>Dashboard</span>
+                    </a>
+                </section>
+
+                <!-- GESTÃO DO NEGÓCIO -->
+                <section class="nav-group" data-nav-group="gestao">
+                    <button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-group-gestao">
+                        <span class="nav-group-title"><span class="nav-group-icon" aria-hidden="true">💼</span><span>Gestão do negócio</span></span>
+                        <span class="nav-group-chevron" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="nav-group-items" id="nav-group-gestao">
+                        <th:block sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL','RECEPCIONISTA')">
+                            <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).CLIENTES)}" th:classappend="${activePage == 'clientes' ? ' active' : ''}" th:href="@{/clientes}">
+                                <span aria-hidden="true">👩</span><span>Clientes</span>
+                            </a>
+                            <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).HISTORICO)}" th:classappend="${activePage == 'atendimentos' ? ' active' : ''}" th:href="@{/atendimentos}">
+                                <span aria-hidden="true">📋</span><span>Atendimentos</span>
+                            </a>
+                            <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).AGENDA)}" th:classappend="${activePage == 'agenda' ? ' active' : ''}" th:href="@{/agenda}">
+                                <span aria-hidden="true">📅</span><span>Agenda</span>
+                            </a>
+                        </th:block>
+                        <a class="nav-link" sec:authorize="hasRole('ADMIN')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).AGENDA)}" th:classappend="${activePage == 'agenda-disponibilidade' ? ' active' : ''}" th:href="@{/agenda/disponibilidade}">
+                            <span aria-hidden="true">🕒</span><span>Disponibilidade</span>
+                        </a>
+                        <a class="nav-link" sec:authorize="hasRole('ADMIN')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).SERVICOS)}" th:classappend="${activePage == 'servicos' ? ' active' : ''}" th:href="@{/servicos}">
+                            <span aria-hidden="true">✂️</span><span>Serviços</span>
+                        </a>
+                        <a class="nav-link" sec:authorize="hasRole('ADMIN')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).EQUIPE)}" th:classappend="${activePage == 'usuarios' ? ' active' : ''}" th:href="@{/usuarios}">
+                            <span aria-hidden="true">👥</span><span>Equipe</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- PRODUTOS E MEGA HAIR -->
+                <section class="nav-group" data-nav-group="catalogo">
+                    <button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-group-catalogo">
+                        <span class="nav-group-title"><span class="nav-group-icon" aria-hidden="true">💇</span><span>Produtos &amp; Mega Hair</span></span>
+                        <span class="nav-group-chevron" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="nav-group-items" id="nav-group-catalogo">
+                        <a class="nav-link" sec:authorize="hasRole('ADMIN')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).PRODUTOS)}" th:classappend="${activePage == 'produtos' ? ' active' : ''}" th:href="@{/produtos}">
+                            <span aria-hidden="true">🛍️</span><span>Produtos</span>
+                        </a>
+                        <th:block sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL')">
+                            <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).ESTOQUE)}" th:classappend="${activePage == 'estoque' ? ' active' : ''}" th:href="@{/estoque}">
+                                <span aria-hidden="true">📦</span><span>Estoque</span>
+                            </a>
+                            <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).MEGA_HAIR)}" th:classappend="${activePage == 'mega-hair' ? ' active' : ''}" th:href="@{/mega-hair}">
+                                <span aria-hidden="true">💇</span><span>Mega Hair</span>
+                            </a>
+                        </th:block>
+                    </div>
+                </section>
+
+                <!-- FINANCEIRO E RESULTADOS -->
+                <section class="nav-group" data-nav-group="resultados">
+                    <button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-group-resultados">
+                        <span class="nav-group-title"><span class="nav-group-icon" aria-hidden="true">📈</span><span>Financeiro &amp; resultados</span></span>
+                        <span class="nav-group-chevron" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="nav-group-items" id="nav-group-resultados">
+                        <a class="nav-link" sec:authorize="hasAnyRole('ADMIN','RECEPCIONISTA')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).FINANCEIRO)}" th:classappend="${activePage == 'financeiro' ? ' active' : ''}" th:href="@{/financeiro}">
+                            <span aria-hidden="true">💰</span><span>Financeiro</span>
+                        </a>
+                        <a class="nav-link" sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMISSOES)}" th:classappend="${activePage == 'comissoes' ? ' active' : ''}" th:href="@{/comissoes}">
+                            <span aria-hidden="true">🏆</span><span>Comissões</span>
+                        </a>
+                        <a class="nav-link" sec:authorize="hasRole('ADMIN')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).RELATORIOS)}" th:classappend="${activePage == 'relatorios' ? ' active' : ''}" th:href="@{/relatorios}">
+                            <span aria-hidden="true">📊</span><span>Relatórios</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- COMUNICAÇÃO E RELACIONAMENTO -->
+                <section class="nav-group" data-nav-group="comunicacao">
+                    <button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-group-comunicacao">
+                        <span class="nav-group-title"><span class="nav-group-icon" aria-hidden="true">💬</span><span>Comunicação &amp; relacionamento</span></span>
+                        <span class="nav-group-chevron" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="nav-group-items" id="nav-group-comunicacao">
+                        <th:block sec:authorize="hasAnyRole('ADMIN','PROFISSIONAL','RECEPCIONISTA')">
+                            <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMUNICACAO)}" th:classappend="${activePage == 'comunicacao' ? ' active' : ''}" th:href="@{/comunicacao}">
+                                <span aria-hidden="true">💬</span><span>WhatsApp</span>
+                            </a>
+                            <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMUNICACAO)}" th:classappend="${activePage == 'conversas' ? ' active' : ''}" th:href="@{/comunicacao/conversas}">
+                                <span aria-hidden="true">💭</span><span>Conversas</span>
+                            </a>
+                            <a class="nav-link" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMUNICACAO)}" th:classappend="${activePage == 'automacao' ? ' active' : ''}" th:href="@{/comunicacao/automacao}">
+                                <span aria-hidden="true">⚙️</span><span>Automação</span>
+                            </a>
+                        </th:block>
+                        <a class="nav-link" sec:authorize="hasRole('ADMIN')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMUNICACAO)}" th:classappend="${activePage == 'whatsapp-business' ? ' active' : ''}" th:href="@{/comunicacao/whatsapp-business}">
+                            <span aria-hidden="true">📲</span><span>WhatsApp Business</span>
+                        </a>
+                        <a class="nav-link" sec:authorize="hasAnyRole('ADMIN','GERENTE')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMUNICACAO)}" th:classappend="${activePage == 'avaliacoes' ? ' active' : ''}" th:href="@{/comunicacao/avaliacoes}">
+                            <span aria-hidden="true">⭐</span><span>Avaliações</span>
+                        </a>
+                        <a class="nav-link" sec:authorize="hasAnyRole('ADMIN','GERENTE')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMUNICACAO)}" th:classappend="${activePage == 'satisfacao' ? ' active' : ''}" th:href="@{/comunicacao/avaliacoes/dashboard}">
+                            <span aria-hidden="true">📈</span><span>Satisfação</span>
+                        </a>
+                        <a class="nav-link" sec:authorize="hasRole('ADMIN')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMUNICACAO)}" th:classappend="${activePage == 'retencao' ? ' active' : ''}" th:href="@{/comunicacao/retencao}">
+                            <span aria-hidden="true">💜</span><span>Retenção</span>
+                        </a>
+                        <a class="nav-link" sec:authorize="hasRole('ADMIN')" th:if="${#lists.contains(modulosAtivos, T(com.marceloaleixo.melvora.entity.enums.ModuloSistema).COMUNICACAO)}" th:classappend="${activePage == 'campanhas' ? ' active' : ''}" th:href="@{/comunicacao/campanhas}">
+                            <span aria-hidden="true">📣</span><span>Campanhas</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- ADMINISTRAÇÃO DA PLATAFORMA -->
+                <section class="nav-group" data-nav-group="plataforma" sec:authorize="hasRole('SUPER_ADMIN')">
+                    <button class="nav-group-toggle" type="button" aria-expanded="false" aria-controls="nav-group-plataforma">
+                        <span class="nav-group-title"><span class="nav-group-icon" aria-hidden="true">🛡️</span><span>Administração da plataforma</span></span>
+                        <span class="nav-group-chevron" aria-hidden="true">⌄</span>
+                    </button>
+                    <div class="nav-group-items" id="nav-group-plataforma">
+                        <a class="nav-link" th:classappend="${activePage == 'empresas' ? ' active' : ''}" th:href="@{/empresas}">
+                            <span aria-hidden="true">🏢</span><span>Empresas</span>
+                        </a>
+                        <a class="nav-link" th:classappend="${activePage == 'usuarios' ? ' active' : ''}" th:href="@{/super-admin/usuarios}">
+                            <span aria-hidden="true">🔐</span><span>Usuários</span>
+                        </a>
+                    </div>
+                </section>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="security-badge" role="status"><span aria-hidden="true">🔐</span><div><strong>Tenant protegido</strong><small>Dados isolados por empresa.</small></div></div>
+                <form method="post" th:action="@{/logout}">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button class="logout-button" type="submit">Sair</button>
+                </form>
+            </div>
         </div>
-    </div>
-</aside>
+    </aside>
 </div>
