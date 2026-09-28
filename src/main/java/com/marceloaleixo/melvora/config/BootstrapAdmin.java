@@ -36,9 +36,10 @@ public class BootstrapAdmin {
 
         return args -> {
             if (!properties.isEnabled()) {
-                log.info("Bootstrap inicial do Melvora desabilitado.");
+                log.info("Bootstrap inicial do Melvora desabilitado por MELVORA_BOOTSTRAP_ENABLED=false.");
                 return;
             }
+            log.info("Verificando configuração inicial do Melvora (SUPER_ADMIN/ADMIN)...");
 
             new TransactionTemplate(transactionManager).executeWithoutResult(status -> {
                 String masterEmail = normalize(properties.getMasterEmail()).toLowerCase(Locale.ROOT);
@@ -120,7 +121,8 @@ public class BootstrapAdmin {
                     log.warn("Altere as credenciais após o primeiro acesso.");
                     log.warn("============================================================");
                 } else {
-                    log.info("Bootstrap já realizado. Nenhum usuário novo foi criado.");
+                    log.info("Bootstrap concluído: SUPER_ADMIN {} e ADMIN {} já existem. Nenhum usuário foi duplicado.",
+                            masterEmail, adminEmail);
                 }
             });
         };
