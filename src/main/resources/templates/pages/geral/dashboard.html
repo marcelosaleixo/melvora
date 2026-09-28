@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Dashboard')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar">
+<div><div class="eyebrow" th:text="${dashboard.plataforma ? 'ADMINISTRAÇÃO DA PLATAFORMA' : 'PAINEL DA EMPRESA'}">PAINEL</div><h1>Olá, <span th:text="${dashboard.nomeUsuario}">Administrador</span> 👋</h1><p th:text="${dashboard.empresaNome}">Salão Demonstração</p></div>
+<div class="profile-chip"><div class="avatar" th:text="${#strings.substring(dashboard.nomeUsuario,0,1).toUpperCase()}">A</div><div><strong th:text="${dashboard.nomeUsuario}">Administrador</strong><span th:text="${dashboard.role}">ADMIN</span></div></div>
+</header>
+<section class="welcome-banner" th:classappend="${dashboard.plataforma ? ' platform' : ''}"><div><span class="banner-label" th:text="${dashboard.plataforma ? 'CONTROLE DA PLATAFORMA' : 'VISÃO GERAL'}">VISÃO GERAL</span><h2 th:text="${dashboard.plataforma ? 'Tudo sob controle em um só lugar.' : 'Acompanhe o seu negócio de beleza.'}">Acompanhe o seu negócio de beleza.</h2><p th:text="${dashboard.plataforma ? 'Monitore empresas e usuários cadastrados no Melvora.' : 'Clientes, estoque e operações de Mega Hair organizados para sua equipe.'}">Clientes, estoque e operações de Mega Hair organizados para sua equipe.</p></div><div class="banner-icon" th:text="${dashboard.plataforma ? '🏢' : '✨'}">✨</div></section>
+<section class="stats-grid">
+<article class="stat-card"><div class="stat-icon">🏢</div><div><span th:text="${dashboard.plataforma ? 'Empresas ativas' : 'Empresa'}">Empresa</span><strong th:text="${dashboard.empresas}">1</strong></div></article>
+<article class="stat-card"><div class="stat-icon">👥</div><div><span>Usuários ativos</span><strong th:text="${dashboard.usuarios}">0</strong></div></article>
+<article class="stat-card"><div class="stat-icon">👩</div><div><span>Clientes ativos</span><strong th:text="${dashboard.clientes}">0</strong></div></article>
+<article class="stat-card"><div class="stat-icon">📦</div><div><span>Produtos ativos</span><strong th:text="${dashboard.produtos}">0</strong></div></article>
+<article class="stat-card"><div class="stat-icon">💇</div><div><span>Lotes Mega Hair</span><strong th:text="${dashboard.lotesMegaHair}">0</strong></div></article>
+<article class="stat-card"><div class="stat-icon">✨</div><div><span>Aplicações</span><strong th:text="${dashboard.aplicacoes}">0</strong></div></article>
+<article class="stat-card"><div class="stat-icon">🔄</div><div><span>Manutenções</span><strong th:text="${dashboard.manutencoes}">0</strong></div></article>
+</section>
+<section class="content-section"><div class="section-heading"><div><span class="section-kicker">ACESSOS</span><h2>Módulos do Melvora</h2></div><span class="section-note" th:text="${dashboard.plataforma ? 'Visão administrativa' : 'Operação da empresa'}">Operação da empresa</span></div><div class="module-grid"><article class="module-card" th:each="modulo : ${dashboard.modulos}"><div class="module-icon" th:text="${modulo.icone}">💇</div><div class="module-copy"><h3 th:text="${modulo.nome}">Mega Hair</h3><p th:text="${modulo.descricao}">Descrição</p></div><a class="module-action" th:href="${modulo.href}" th:text="${dashboard.plataforma ? 'Abrir' : 'Ver módulo'}">Abrir</a></article></div></section>
+<section class="security-panel"><div class="security-panel-icon">🔐</div><div><strong>Isolamento por empresa ativo</strong><p>Os dados operacionais são filtrados pela empresa do usuário autenticado.</p></div></section>
+<footer class="footer"><span>Melvora © 2026</span><span th:text="${dashboard.emailUsuario}">usuario@melvora.local</span></footer>
+</main>
+</th:block>
+
+</body>
+</html>

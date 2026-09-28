@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Licenciamento')}" ></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+    <header class="topbar">
+        <div>
+            <div class="eyebrow">LICENCIAMENTO</div>
+            <h1 th:text="${empresa.nomeFantasia}">Empresa</h1>
+            <p>Defina os módulos contratados e disponíveis para esta empresa.</p>
+        </div>
+        <a class="secondary-button" th:href="@{/empresas}">← Empresas</a>
+    </header>
+
+    <div th:replace="~{fragments/feedback :: messages}"></div>
+
+    <section class="content-section">
+        <div class="panel">
+            <div class="panel-heading">
+                <div>
+                    <span class="section-kicker">MÓDULOS CONTRATADOS</span>
+                    <h2>Controle de acesso por módulo</h2>
+                </div>
+                <span class="section-note">Somente SUPER_ADMIN pode alterar.</span>
+            </div>
+
+            <form method="post" th:action="@{/empresas/{id}/modulos(id=${empresa.id})}" class="module-license-grid">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <label class="license-card" th:each="modulo : ${modulos}">
+                    <input type="checkbox" name="modulos" th:value="${modulo.name()}" th:checked="${#lists.contains(ativos, modulo)}">
+                    <span class="license-icon" th:text="${modulo.icone}">✨</span>
+                    <span class="license-copy">
+                        <strong th:text="${modulo.nome}">Módulo</strong>
+                        <small th:text="${modulo.descricao}">Descrição</small>
+                    </span>
+                    <span class="license-check" aria-hidden="true">✓</span>
+                </label>
+
+                <div class="license-rules">
+                    <strong>Dependências automáticas</strong>
+                    <p>Ao ativar Mega Hair, o sistema libera automaticamente Clientes, Produtos, Estoque e Histórico. Estoque também exige Produtos. O backend aplica essas regras mesmo que a requisição seja manipulada manualmente.</p>
+                </div>
+
+                <div class="form-actions">
+                    <button class="primary-button" type="submit">Salvar licenciamento</button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="security-panel">
+        <div class="security-panel-icon">🔐</div>
+        <div>
+            <strong>Licenciamento aplicado no backend</strong>
+            <p>O módulo não é apenas ocultado no menu: rotas e serviços também verificam a licença ativa do tenant.</p>
+        </div>
+    </section>
+</main>
+</th:block>
+</body>
+</html>

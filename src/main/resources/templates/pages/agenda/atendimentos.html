@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Atendimentos')}" ></head>
+<body>
+<div class="app-shell">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <main class="main-content">
+        <header class="page-header">
+            <div><span class="section-kicker">HISTÓRICO OPERACIONAL</span><h1>Atendimentos</h1><p>Registros dos atendimentos concluídos, preservando os dados do serviço no momento da execução.</p></div>
+        </header>
+        <div th:replace="~{fragments/feedback :: messages}"></div>
+        <section class="panel">
+            <div class="table-wrapper" th:if="${pagina != null and pagina.hasContent()}">
+                <table class="data-table">
+                    <thead><tr><th>Data</th><th>Cliente</th><th>Serviço</th><th>Profissional</th><th>Duração</th><th>Valor</th><th>Tipo</th></tr></thead>
+                    <tbody>
+                    <tr th:each="a : ${pagina.content}">
+                        <td th:text="${#temporals.format(a.dataHoraInicio, 'dd/MM/yyyy HH:mm')}">23/09/2026 10:00</td>
+                        <td><strong th:text="${a.cliente.nome}">Cliente</strong></td>
+                        <td th:text="${a.servicoNome != null ? a.servicoNome : 'Atendimento avulso'}">Corte</td>
+                        <td th:text="${a.profissional.nome}">Profissional</td>
+                        <td th:text="${a.duracaoMinutos + ' min'}">60 min</td>
+                        <td th:text="${'R$ ' + #numbers.formatDecimal(a.valorCobrado, 1, 2)}">R$ 100,00</td>
+                        <td th:text="${a.tipo}">OUTRO_ATENDIMENTO</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="empty-state" th:if="${pagina == null or !pagina.hasContent()}">Nenhum atendimento concluído registrado ainda.</div>
+        </section>
+        <div th:replace="~{fragments/pagination :: pagination(${pagina}, '/atendimentos')}"></div>
+    </main>
+</div>
+</body>
+</html>

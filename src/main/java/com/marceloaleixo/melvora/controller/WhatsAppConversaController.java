@@ -37,7 +37,7 @@ public class WhatsAppConversaController {
         model.addAttribute("pagina", pagina);
         model.addAttribute("busca", busca == null ? "" : busca);
         model.addAttribute("activePage", "conversas");
-        return "pages/whatsapp-conversas";
+        return "pages/comunicacao/whatsapp-conversas";
     }
 
     @GetMapping("/{clienteId}")
@@ -51,7 +51,7 @@ public class WhatsAppConversaController {
         model.addAttribute("cliente", detalhe.cliente());
         model.addAttribute("pagina", detalhe.mensagens());
         model.addAttribute("activePage", "conversas");
-        return "pages/whatsapp-conversa";
+        return "pages/comunicacao/whatsapp-conversa";
     }
 
     @GetMapping("/numero/{telefone}")
@@ -65,7 +65,7 @@ public class WhatsAppConversaController {
         model.addAttribute("cliente", detalhe.cliente());
         model.addAttribute("pagina", detalhe.mensagens());
         model.addAttribute("activePage", "conversas");
-        return "pages/whatsapp-conversa";
+        return "pages/comunicacao/whatsapp-conversa";
     }
 
     @PostMapping("/{clienteId}/enviar")

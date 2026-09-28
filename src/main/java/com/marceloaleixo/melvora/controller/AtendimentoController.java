@@ -27,6 +27,6 @@ public class AtendimentoController {
         moduloAcessoService.exigir(ModuloSistema.HISTORICO);
         model.addAttribute("pagina", service.listar(PageRequest.of(Math.max(0, page), 15,
                 Sort.by("dataHoraInicio").descending())));
-        return "pages/atendimentos";
+        return "pages/agenda/atendimentos";
     }
 }

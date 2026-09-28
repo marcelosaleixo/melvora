@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Avaliações')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar"><div><span class="eyebrow">COMUNICAÇÃO</span><h1>Avaliações</h1><p>Feedback recebido após os atendimentos da empresa.</p></div></header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+<section class="stats-grid">
+  <article class="stat-card"><span>Média geral</span><strong th:text="${resumo.mediaFormatada()} + ' / 5'">0,0 / 5</strong></article>
+  <article class="stat-card"><span>Avaliações respondidas</span><strong th:text="${resumo.respondidas}">0</strong></article>
+</section>
+<section class="panel">
+  <div class="panel-heading"><div><span class="section-kicker">FEEDBACK</span><h2>Últimas avaliações</h2></div><a class="secondary-button" th:href="@{/comunicacao/avaliacoes/dashboard}">Ver dashboard de satisfação</a></div>
+  <div class="table-wrap" th:if="${pagina.hasContent()}">
+    <table><thead><tr><th>Cliente</th><th>Serviço</th><th>Profissional</th><th>Nota</th><th>Comentário</th><th>Data</th></tr></thead>
+      <tbody><tr th:each="a : ${pagina.content}">
+        <td th:text="${a.cliente.nome}">Cliente</td>
+        <td th:text="${a.atendimento.servicoNome != null ? a.atendimento.servicoNome : a.atendimento.tipo}">Serviço</td>
+        <td th:text="${a.profissional.nome}">Profissional</td>
+        <td><strong th:text="${a.nota != null ? a.nota + ' ★' : 'Pendente'}">5 ★</strong></td>
+        <td th:text="${a.comentario != null && !a.comentario.isBlank() ? a.comentario : '—'}">—</td>
+        <td th:text="${#temporals.format(a.createdAt,'dd/MM/yyyy HH:mm')}">24/09/2026 15:00</td>
+      </tr></tbody>
+    </table>
+  </div>
+  <div class="empty-state" th:unless="${pagina.hasContent()}">Ainda não há avaliações.</div>
+</section>
+<div th:replace="~{fragments/pagination :: pagination(${pagina}, '/comunicacao/avaliacoes')}"></div>
+</main></th:block>
+</body></html>

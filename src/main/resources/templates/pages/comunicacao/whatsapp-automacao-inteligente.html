@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Automação Inteligente')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar">
+  <div><span class="eyebrow">COMUNICAÇÃO</span><h1>Automação inteligente</h1><p>Respostas automáticas para dúvidas simples, sem deixar o sistema tomar decisões críticas sozinho.</p></div>
+  <div class="table-actions"><a class="secondary-button" th:href="@{/comunicacao/conversas}">← Conversas</a><a class="secondary-button" th:href="@{/comunicacao/whatsapp-business}">WhatsApp Business</a></div>
+</header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+<section class="panel">
+  <div class="panel-heading"><div><span class="section-kicker">ATENDIMENTO ASSISTIDO</span><h2>Regras de resposta</h2><p class="section-note">O Melvora identifica intenções por regras determinísticas. Agendamento, remarcação e cancelamento não são executados automaticamente.</p></div></div>
+  <form method="post" th:action="@{/comunicacao/automacao-inteligente}">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+    <label class="setting-row"><span><strong>Ativar automação</strong><small>Processa novas mensagens recebidas a cada ciclo do Melvora.</small></span><input type="checkbox" name="ativa" value="true" th:checked="${config.ativa}"></label>
+    <label class="setting-row"><span><strong>Responder saudações</strong><small>Responde a mensagens como “olá”, “bom dia” e similares.</small></span><input type="checkbox" name="responderSaudacao" value="true" th:checked="${config.responderSaudacao}"></label>
+    <label class="setting-row"><span><strong>Informar serviços</strong><small>Lista serviços ativos cadastrados no Melvora.</small></span><input type="checkbox" name="responderServicos" value="true" th:checked="${config.responderServicos}"></label>
+    <label class="setting-row"><span><strong>Informar preços</strong><small>Informa os preços cadastrados e avisa que podem depender de avaliação.</small></span><input type="checkbox" name="responderPreco" value="true" th:checked="${config.responderPreco}"></label>
+    <label class="setting-row"><span><strong>Orientar agendamento</strong><small>Consulta o próximo atendimento e orienta a cliente; não cria horário automaticamente.</small></span><input type="checkbox" name="responderAgendamento" value="true" th:checked="${config.responderAgendamento}"></label>
+    <label class="setting-row"><span><strong>Encaminhar para atendimento humano</strong><small>Responde solicitações de pessoa, remarcação e cancelamento informando que a equipe continuará o atendimento.</small></span><input type="checkbox" name="encaminharHumano" value="true" th:checked="${config.encaminharHumano}"></label>
+    <div class="module-warning"><strong>Proteção operacional</strong><p>O Melvora não confirma disponibilidade, não cria agendamento e não cancela atendimento apenas com base em uma mensagem. Essas ações continuam sob validação da equipe.</p></div>
+    <button class="primary-button" type="submit">Salvar automação →</button>
+  </form>
+</section>
+<style>
+.setting-row{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px 0;border-bottom:1px solid #eee}.setting-row strong,.setting-row small{display:block}.setting-row small{margin-top:5px;color:#718096}.setting-row input{width:20px;height:20px;flex:0 0 auto}.panel{max-width:980px}
+</style>
+</main>
+</th:block>
+</body>
+</html>

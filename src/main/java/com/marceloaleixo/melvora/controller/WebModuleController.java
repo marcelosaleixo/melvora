@@ -58,7 +58,7 @@ public class WebModuleController {
         moduloAcessoService.exigir(ModuloSistema.CLIENTES);
         model.addAttribute("pagina", clienteService.listar(PageRequest.of(Math.max(page,0), 15, Sort.by("nome").ascending())));
         model.addAttribute("clienteForm", new ClienteRequests.CriarClienteRequest("", "", "", ""));
-        return "pages/clientes";
+        return "pages/cadastros/clientes";
     }
 
     @PostMapping("/clientes")
@@ -68,7 +68,7 @@ public class WebModuleController {
         moduloAcessoService.exigir(ModuloSistema.CLIENTES);
         if (bindingResult.hasErrors()) {
             model.addAttribute("pagina", clienteService.listar(PageRequest.of(0, 15, Sort.by("nome").ascending())));
-            return "pages/clientes";
+            return "pages/cadastros/clientes";
         }
         try {
             clienteService.criar(form);
@@ -76,7 +76,7 @@ public class WebModuleController {
         } catch (RuntimeException ex) {
             model.addAttribute("erro", mensagemSegura(ex));
             model.addAttribute("pagina", clienteService.listar(PageRequest.of(0, 15, Sort.by("nome").ascending())));
-            return "pages/clientes";
+            return "pages/cadastros/clientes";
         }
         return "redirect:/clientes";
     }
@@ -95,7 +95,7 @@ public class WebModuleController {
         if (moduloAcessoService.possui(ModuloSistema.HISTORICO)) {
             model.addAttribute("historico", megaHairService.historico(id));
         }
-        return "pages/cliente-detalhe";
+        return "pages/cadastros/cliente-detalhe";
     }
 
     @GetMapping("/clientes/{id}/editar")
@@ -106,7 +106,7 @@ public class WebModuleController {
         model.addAttribute("clienteId", id);
         model.addAttribute("clienteForm", new ClienteRequests.EditarClienteRequest(
                 cliente.getNome(), cliente.getTelefone(), cliente.getEmail(), cliente.getObservacoes()));
-        return "pages/cliente-editar";
+        return "pages/cadastros/cliente-editar";
     }
 
     @PostMapping("/clientes/{id}/editar")
@@ -117,7 +117,7 @@ public class WebModuleController {
         moduloAcessoService.exigir(ModuloSistema.CLIENTES);
         if (bindingResult.hasErrors()) {
             model.addAttribute("clienteId", id);
-            return "pages/cliente-editar";
+            return "pages/cadastros/cliente-editar";
         }
         try {
             clienteService.editar(id, form);
@@ -126,7 +126,7 @@ public class WebModuleController {
         } catch (RuntimeException ex) {
             model.addAttribute("clienteId", id);
             model.addAttribute("erro", mensagemSegura(ex));
-            return "pages/cliente-editar";
+            return "pages/cadastros/cliente-editar";
         }
     }
 
@@ -154,7 +154,7 @@ public class WebModuleController {
         if (!model.containsAttribute("produtoForm")) {
             model.addAttribute("produtoForm", new ProdutoRequests.WebForm());
         }
-        return "pages/produtos";
+        return "pages/cadastros/produtos";
     }
 
     @PostMapping("/produtos")
@@ -168,7 +168,7 @@ public class WebModuleController {
         moduloAcessoService.exigir(ModuloSistema.PRODUTOS);
         if (bindingResult.hasErrors()) {
             prepararCatalogoProdutos(model, page);
-            return "pages/produtos";
+            return "pages/cadastros/produtos";
         }
         try {
             produtoService.criar(form.toCriar(), empresaAtual());
@@ -177,7 +177,7 @@ public class WebModuleController {
         } catch (RuntimeException ex) {
             prepararCatalogoProdutos(model, page);
             model.addAttribute("erro", mensagemSegura(ex));
-            return "pages/produtos";
+            return "pages/cadastros/produtos";
         }
     }
 
@@ -195,7 +195,7 @@ public class WebModuleController {
         model.addAttribute("tipos", TipoProduto.values());
         model.addAttribute("fios", TipoFio.values());
         model.addAttribute("metodos", MetodoMegaHair.values());
-        return "pages/produto-editar";
+        return "pages/cadastros/produto-editar";
     }
 
     @PostMapping("/produtos/{id}/editar")
@@ -209,7 +209,7 @@ public class WebModuleController {
         moduloAcessoService.exigir(ModuloSistema.PRODUTOS);
         if (bindingResult.hasErrors()) {
             prepararDadosProduto(model, id);
-            return "pages/produto-editar";
+            return "pages/cadastros/produto-editar";
         }
         try {
             produtoService.editar(id, form.toEditar());
@@ -221,7 +221,7 @@ public class WebModuleController {
             model.addAttribute("produtoMegaHairSemModulo", produto.getTipo() == TipoProduto.MEGA_HAIR
                     && !moduloAcessoService.possui(ModuloSistema.MEGA_HAIR));
             model.addAttribute("erro", mensagemSegura(ex));
-            return "pages/produto-editar";
+            return "pages/cadastros/produto-editar";
         }
     }
 
@@ -245,7 +245,7 @@ public class WebModuleController {
         model.addAttribute("pagina", estoqueService.listar(PageRequest.of(Math.max(page,0), 15, Sort.by("codigo").ascending())));
         model.addAttribute("produtos", produtoService.listarAtivos().stream().filter(p -> p.getTipo() == TipoProduto.MEGA_HAIR).toList());
         model.addAttribute("fios", TipoFio.values()); model.addAttribute("metodos", MetodoMegaHair.values());
-        return "pages/estoque";
+        return "pages/cadastros/estoque";
     }
 
     @PostMapping("/estoque")
@@ -276,7 +276,7 @@ public class WebModuleController {
             if (agendamento.getTipo() != com.marceloaleixo.melvora.entity.enums.TipoAgendamento.APLICACAO_MEGA_HAIR) throw new RegraNegocioException("O agendamento selecionado não é de aplicação de Mega Hair.");
             model.addAttribute("agendamentoContexto", agendamento);
         }
-        return "pages/mega-hair";
+        return "pages/mega-hair/mega-hair";
     }
 
     @PostMapping("/mega-hair/aplicacoes")
@@ -319,7 +319,7 @@ public class WebModuleController {
         var cliente = clienteService.buscar(clienteId);
         model.addAttribute("cliente", cliente);
         model.addAttribute("historico", megaHairService.historico(clienteId));
-        return "pages/historico-mega-hair";
+        return "pages/mega-hair/historico-mega-hair";
     }
 
     @GetMapping("/mega-hair/manutencao/novo")
@@ -341,7 +341,7 @@ public class WebModuleController {
         model.addAttribute("tiposManutencao", new String[]{"MANUTENCAO","REAPLICACAO","REMOCAO"});
         model.addAttribute("agendamentoId", agendamentoId);
         if (agendamentoId != null) model.addAttribute("agendamentoContexto", agendaService.buscar(agendamentoId));
-        return "pages/manutencao-mega-hair";
+        return "pages/mega-hair/manutencao-mega-hair";
     }
 
     @PostMapping("/mega-hair/manutencao/{aplicacaoId}")

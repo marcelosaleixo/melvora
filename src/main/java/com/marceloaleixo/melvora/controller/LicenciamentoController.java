@@ -32,7 +32,7 @@ public class LicenciamentoController {
         model.addAttribute("empresa", empresa);
         model.addAttribute("modulos", Arrays.stream(ModuloSistema.values()).toList());
         model.addAttribute("ativos", ativos);
-        return "pages/empresa-modulos";
+        return "pages/administracao/empresa-modulos";
     }
 
     @PostMapping("/empresas/{empresaId}/modulos")

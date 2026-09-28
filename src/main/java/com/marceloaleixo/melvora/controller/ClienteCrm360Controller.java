@@ -35,6 +35,6 @@ public class ClienteCrm360Controller {
         model.addAttribute("comunicacaoAtiva", moduloAcessoService.possui(ModuloSistema.COMUNICACAO));
         model.addAttribute("historicoAtivo", moduloAcessoService.possui(ModuloSistema.HISTORICO));
         model.addAttribute("activePage", "clientes");
-        return "pages/cliente-crm-360";
+        return "pages/cadastros/cliente-crm-360";
     }
 }

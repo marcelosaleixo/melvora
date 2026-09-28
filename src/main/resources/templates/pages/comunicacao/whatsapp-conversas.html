@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Conversas WhatsApp')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar conversation-topbar">
+  <div>
+    <span class="eyebrow">WHATSAPP</span>
+    <h1>Central de conversas</h1>
+    <p>Atenda suas clientes dentro do Melvora usando o provedor WhatsApp configurado pela empresa.</p>
+  </div>
+  <div class="conversation-header-actions">
+    <a class="secondary-button" th:href="@{/comunicacao}">← Comunicação</a>
+    <a class="primary-button" th:href="@{/comunicacao/whatsapp-business}" sec:authorize="hasRole('ADMIN')">Configurar WhatsApp</a>
+  </div>
+</header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+
+<section class="panel conversation-panel">
+  <div class="conversation-search-row">
+    <form method="get" th:action="@{/comunicacao/conversas}" class="conversation-search">
+      <span aria-hidden="true">⌕</span>
+      <input type="search" name="busca" th:value="${busca}" maxlength="100" placeholder="Buscar por nome ou telefone...">
+      <button type="submit" class="primary-button">Buscar</button>
+    </form>
+  </div>
+
+  <div class="conversation-list" th:if="${pagina != null and !pagina.isEmpty()}">
+    <a class="conversation-row" th:each="c : ${pagina.content}"
+       th:href="${c.clienteId != null ? '/comunicacao/conversas/' + c.clienteId : '/comunicacao/conversas/numero/' + c.telefone}">
+      <div class="conversation-avatar" th:text="${#strings.substring(c.nomeExibicao(),0,1).toUpperCase()}">M</div>
+      <div class="conversation-main">
+        <div class="conversation-head">
+          <strong th:text="${c.nomeExibicao()}">Cliente</strong>
+          <time th:text="${#temporals.format(c.ultimaData, 'dd/MM HH:mm')}">24/09 14:00</time>
+        </div>
+        <div class="conversation-sub" th:text="${c.telefone}">5566999999999</div>
+        <p th:classappend="${c.naoLidas > 0 ? ' unread-preview' : ''}">
+          <span th:text="${c.ultimaDirecao.name() == 'SAIDA' ? 'Você: ' : ''}">Você: </span><span th:text="${c.ultimaMensagem ?: 'Mensagem sem texto'}">Olá!</span>
+        </p>
+      </div>
+      <span class="conversation-unread" th:if="${c.naoLidas > 0}" th:text="${c.naoLidas}">1</span>
+      <span class="conversation-arrow">›</span>
+    </a>
+  </div>
+
+  <div class="empty-state" th:if="${pagina == null or pagina.isEmpty()}">
+    <strong>Nenhuma conversa encontrada.</strong>
+    <p>Quando o Melvora receber ou enviar uma mensagem, a conversa aparecerá aqui.</p>
+  </div>
+
+  <div class="pagination" th:if="${pagina != null and pagina.totalPages > 1}">
+    <a class="pagination-link" th:classappend="${pagina.first ? ' disabled' : ''}"
+       th:href="@{/comunicacao/conversas(page=${pagina.number - 1},busca=${busca})}">← Anterior</a>
+    <span class="pagination-info">Página <strong th:text="${pagina.number + 1}">1</strong> de <strong th:text="${pagina.totalPages}">2</strong></span>
+    <a class="pagination-link" th:classappend="${pagina.last ? ' disabled' : ''}"
+       th:href="@{/comunicacao/conversas(page=${pagina.number + 1},busca=${busca})}">Próxima →</a>
+  </div>
+</section>
+</main>
+</th:block>
+</body>
+</html>

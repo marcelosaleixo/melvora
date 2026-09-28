@@ -38,7 +38,7 @@ public class WhatsAppAutomacaoController {
                         .orElseThrow(() -> new RegraNegocioException("Empresa não encontrada.")));
         model.addAttribute("config", cfg);
         model.addAttribute("activePage", "comunicacao");
-        return "pages/whatsapp-automacao-inteligente";
+        return "pages/comunicacao/whatsapp-automacao-inteligente";
     }
 
     @PostMapping

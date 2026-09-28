@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('Dashboard de satisfação')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content satisfaction-page">
+    <header class="topbar satisfaction-topbar">
+        <div>
+            <span class="eyebrow">COMUNICAÇÃO</span>
+            <h1>Satisfação das clientes</h1>
+            <p>Entenda a experiência após os atendimentos e acompanhe a evolução da qualidade.</p>
+        </div>
+        <div class="topbar-actions">
+            <a class="secondary-button" th:href="@{/comunicacao/avaliacoes}">← Avaliações</a>
+        </div>
+    </header>
+
+    <section class="panel satisfaction-filter">
+        <form method="get" th:action="@{/comunicacao/avaliacoes/dashboard}">
+            <div class="satisfaction-filter-fields">
+                <label>Início<input type="date" name="inicio" th:value="${dashboard.inicio}"></label>
+                <label>Fim<input type="date" name="fim" th:value="${dashboard.fim}"></label>
+                <button class="primary-button" type="submit">Atualizar indicadores</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="stats-grid satisfaction-stats">
+        <article class="stat-card satisfaction-stat-main"><span>Média geral</span><strong th:text="${dashboard.mediaFormatada()} + ' / 5'">4,8 / 5</strong><small>entre as avaliações respondidas</small></article>
+        <article class="stat-card"><span>Respondidas</span><strong th:text="${dashboard.respondidas}">0</strong><small>feedbacks no período</small></article>
+        <article class="stat-card"><span>Pendentes</span><strong th:text="${dashboard.pendentes}">0</strong><small>atendimentos aguardando avaliação</small></article>
+        <article class="stat-card"><span>5 estrelas</span><strong th:text="${dashboard.percentualCincoEstrelasFormatado()}">0%</strong><small>das avaliações respondidas</small></article>
+    </section>
+
+    <section class="satisfaction-grid">
+        <article class="panel satisfaction-panel">
+            <div class="panel-heading"><div><span class="section-kicker">DISTRIBUIÇÃO</span><h2>Notas recebidas</h2></div></div>
+            <div class="rating-bars" th:if="${dashboard.respondidas > 0}">
+                <div class="rating-bar" th:each="item : ${dashboard.distribuicao}">
+                    <div class="rating-bar-label"><strong th:text="${item.nota} + ' ★'">5 ★</strong><span th:text="${item.quantidade} + ' avaliações'">0 avaliações</span></div>
+                    <div class="rating-track"><span th:style="'width:' + ${item.percentual} + '%'" class="rating-fill"></span></div>
+                    <b th:text="${item.percentual} + '%'">0%</b>
+                </div>
+            </div>
+            <div class="empty-state" th:unless="${dashboard.respondidas > 0}">Ainda não existem avaliações respondidas neste período.</div>
+        </article>
+
+        <article class="panel satisfaction-panel">
+            <div class="panel-heading"><div><span class="section-kicker">EVOLUÇÃO</span><h2>Média por mês</h2></div></div>
+            <div class="trend-list" th:if="${!dashboard.tendencia.isEmpty()}">
+                <div class="trend-row" th:each="item : ${dashboard.tendencia}">
+                    <div><strong th:text="${item.mes}">set/26</strong><span th:text="${item.quantidade} + ' avaliações'">0 avaliações</span></div>
+                    <div class="trend-track"><span class="trend-fill" th:style="'width:' + (${item.media} * 20) + '%' "></span></div>
+                    <b th:text="${item.media > 0 ? item.media + ' / 5' : '—'}">4,8 / 5</b>
+                </div>
+            </div>
+            <div class="empty-state" th:if="${dashboard.tendencia.isEmpty()}">Sem dados suficientes para a evolução.</div>
+        </article>
+    </section>
+
+    <section class="satisfaction-grid">
+        <article class="panel satisfaction-panel">
+            <div class="panel-heading"><div><span class="section-kicker">EQUIPE</span><h2>Satisfação por profissional</h2></div></div>
+            <div class="satisfaction-ranking" th:if="${!dashboard.profissionais.isEmpty()}">
+                <div class="ranking-row" th:each="item,stat : ${dashboard.profissionais}">
+                    <span class="ranking-position" th:text="${stat.count + 1}">1</span>
+                    <div class="ranking-main"><strong th:text="${item.nome}">Profissional</strong><small th:text="${item.quantidade} + ' avaliações'">0 avaliações</small></div>
+                    <strong class="ranking-score" th:text="${item.media} + ' ★'">5,0 ★</strong>
+                </div>
+            </div>
+            <div class="empty-state" th:if="${dashboard.profissionais.isEmpty()}">Ainda não há avaliações por profissional.</div>
+        </article>
+
+        <article class="panel satisfaction-panel">
+            <div class="panel-heading"><div><span class="section-kicker">SERVIÇOS</span><h2>Satisfação por serviço</h2></div></div>
+            <div class="satisfaction-ranking" th:if="${!dashboard.servicos.isEmpty()}">
+                <div class="ranking-row" th:each="item,stat : ${dashboard.servicos}">
+                    <span class="ranking-position" th:text="${stat.count + 1}">1</span>
+                    <div class="ranking-main"><strong th:text="${item.nome}">Serviço</strong><small th:text="${item.quantidade} + ' avaliações'">0 avaliações</small></div>
+                    <strong class="ranking-score" th:text="${item.media} + ' ★'">5,0 ★</strong>
+                </div>
+            </div>
+            <div class="empty-state" th:if="${dashboard.servicos.isEmpty()}">Ainda não há avaliações por serviço.</div>
+        </article>
+    </section>
+
+    <section class="panel satisfaction-note">
+        <div class="satisfaction-note-icon">💡</div>
+        <div><strong>Como interpretar</strong><p>A média e os percentuais consideram apenas avaliações respondidas. Os rankings mostram os grupos com maior média dentro do período selecionado; use também a quantidade de avaliações para contextualizar o resultado.</p></div>
+    </section>
+</main>
+</th:block>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Serviços')}" ></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar">
+  <div><span class="eyebrow">SERVIÇOS</span><h1>Serviços e procedimentos</h1><p>Cadastre os serviços oferecidos, defina duração, preço e profissionais habilitados.</p></div>
+</header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+
+<div class="module-layout">
+<section class="panel">
+  <div class="panel-heading"><div><span class="section-kicker">NOVO SERVIÇO</span><h2>Cadastrar procedimento</h2></div></div>
+  <form class="form-grid" method="post" th:action="@{/servicos}" th:object="${servicoForm}">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+    <div class="field full"><label for="nome">Nome</label><input id="nome" th:field="*{nome}" maxlength="150" required placeholder="Ex.: Aplicação de Mega Hair"><small class="field-error" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></small></div>
+    <div class="field"><label for="categoria">Categoria</label><input id="categoria" th:field="*{categoria}" maxlength="80" required placeholder="Ex.: Mega Hair"></div>
+    <div class="field"><label for="duracaoMinutos">Duração (minutos)</label><input id="duracaoMinutos" th:field="*{duracaoMinutos}" type="number" min="15" max="720" step="15" required><small>Entre 15 minutos e 12 horas.</small></div>
+    <div class="field"><label for="preco">Preço (R$)</label><input id="preco" th:field="*{preco}" type="number" min="0" step="0.01" required></div>
+    <div class="field full"><label for="descricao">Descrição</label><textarea id="descricao" th:field="*{descricao}" maxlength="1000" placeholder="Detalhes do procedimento"></textarea></div>
+    <div class="field full"><label for="profissionalIds">Profissionais habilitados</label><select id="profissionalIds" th:field="*{profissionalIds}" multiple size="5"><option th:each="p : ${profissionais}" th:value="${p.id}" th:text="${p.nome}"></option></select><small>Se nenhum profissional for selecionado, o serviço ficará disponível para qualquer ADMIN ou PROFISSIONAL ativo da empresa.</small></div>
+    <button class="primary-button full" type="submit">Cadastrar serviço</button>
+  </form>
+</section>
+
+<section class="panel">
+  <div class="panel-heading"><div><span class="section-kicker">CATÁLOGO</span><h2>Serviços cadastrados</h2></div><span class="section-note" th:text="${pagina.totalElements + ' serviços'}">0 serviços</span></div>
+  <div class="table-wrap">
+    <table><thead><tr><th>Serviço</th><th>Categoria</th><th>Duração</th><th>Preço</th><th>Profissionais</th><th>Status</th><th>Ações</th></tr></thead>
+      <tbody>
+      <tr th:each="s : ${pagina.content}">
+        <td><strong th:text="${s.nome}">Serviço</strong><small class="table-secondary" th:if="${s.descricao != null}" th:text="${s.descricao}"></small></td>
+        <td th:text="${s.categoria}">Categoria</td>
+        <td th:text="${s.duracaoMinutos + ' min'}">60 min</td>
+        <td th:text="${'R$ ' + #numbers.formatDecimal(s.preco, 1, 2)}">R$ 0,00</td>
+        <td th:text="${s.profissionais.isEmpty() ? 'Todos' : s.profissionais.size()}">Todos</td>
+        <td><span class="status" th:classappend="${s.ativo ? ' active' : ' muted'}" th:text="${s.ativo ? 'Ativo' : 'Inativo'}">Ativo</span></td>
+        <td><div class="table-actions"><a class="table-action" th:href="${'/servicos/' + s.id + '/editar'}">Editar</a><form class="inline-form" method="post" th:action="${'/servicos/' + s.id + '/alternar-status'}"><input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"><button class="table-action-button" type="submit" th:text="${s.ativo ? 'Desativar' : 'Ativar'}">Desativar</button></form></div></td>
+      </tr>
+      <tr th:if="${pagina.empty}"><td colspan="7" class="empty">Nenhum serviço cadastrado.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <th:block th:replace="~{fragments/pagination :: pagination(${pagina}, '/servicos')}"></th:block>
+</section>
+</div>
+
+<section class="info-grid">
+  <div class="info-card"><span>Agenda</span><strong>Duração automática</strong><p>Quando um serviço é escolhido no agendamento, o horário final é calculado pelo tempo cadastrado no serviço.</p></div>
+  <div class="info-card"><span>Segurança</span><strong>Isolamento por empresa</strong><p>Serviços e profissionais são sempre buscados usando o tenant autenticado. O frontend não escolhe a empresa.</p></div>
+</section>
+</main>
+</th:block>
+</body>
+</html>

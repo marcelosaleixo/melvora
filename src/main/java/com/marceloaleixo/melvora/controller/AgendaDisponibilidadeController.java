@@ -34,7 +34,7 @@ public class AgendaDisponibilidadeController {
                     h==null?"08:00":h.getHoraInicio().toString(), h==null?"18:00":h.getHoraFim().toString(), h==null?15:h.getIntervaloMinutos(), h!=null&&h.isAtivo()));
         }
         model.addAttribute("dias",dias); model.addAttribute("activePage","agenda");
-        return "pages/agenda-disponibilidade";
+        return "pages/agenda/agenda-disponibilidade";
     }
 
     @PostMapping

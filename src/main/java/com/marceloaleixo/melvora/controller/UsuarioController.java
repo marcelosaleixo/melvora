@@ -33,7 +33,7 @@ public class UsuarioController {
     public String usuarios(@RequestParam(defaultValue = "0") int page, Model model) {
         moduloAcessoService.exigir(ModuloSistema.EQUIPE);
         prepararModeloEmpresa(model, page);
-        return "pages/usuarios";
+        return "pages/administracao/usuarios";
     }
 
     @PostMapping("/usuarios")
@@ -47,7 +47,7 @@ public class UsuarioController {
         moduloAcessoService.exigir(ModuloSistema.EQUIPE);
         if (bindingResult.hasErrors()) {
             prepararModeloEmpresa(model, 0);
-            return "pages/usuarios";
+            return "pages/administracao/usuarios";
         }
 
         try {
@@ -76,7 +76,7 @@ public class UsuarioController {
     @PreAuthorize("hasRole('SUPER_ADMIN')")
     public String plataforma(@RequestParam(defaultValue = "0") int page, Model model) {
         prepararModeloPlataforma(model, page);
-        return "pages/usuarios";
+        return "pages/administracao/usuarios";
     }
 
     @PostMapping("/super-admin/usuarios")
@@ -89,7 +89,7 @@ public class UsuarioController {
 
         if (bindingResult.hasErrors()) {
             prepararModeloPlataforma(model, 0);
-            return "pages/usuarios";
+            return "pages/administracao/usuarios";
         }
 
         try {

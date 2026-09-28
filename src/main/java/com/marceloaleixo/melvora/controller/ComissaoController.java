@@ -28,16 +28,16 @@ public class ComissaoController {
         model.addAttribute("configuracoes", service.configuracoes());
         model.addAttribute("profissionais", service.profissionais());
         if (!model.containsAttribute("form")) model.addAttribute("form", new ComissaoRequests.ConfiguracaoForm(null, null));
-        return "pages/comissoes";
+        return "pages/financeiro/comissoes";
     }
 
     @PostMapping("/comissoes/configuracoes")
     @PreAuthorize("hasRole('ADMIN')")
     public String salvar(@Valid @ModelAttribute("form") ComissaoRequests.ConfiguracaoForm form, BindingResult br, Model model, RedirectAttributes ra) {
         modulo.exigir(ModuloSistema.COMISSOES);
-        if (br.hasErrors()) { preparar(model); return "pages/comissoes"; }
+        if (br.hasErrors()) { preparar(model); return "pages/financeiro/comissoes"; }
         try { service.salvarConfiguracao(form); ra.addFlashAttribute("sucesso", "Configuração de comissão salva com sucesso."); return "redirect:/comissoes"; }
-        catch (RuntimeException e) { preparar(model); model.addAttribute("erro", mensagem(e)); return "pages/comissoes"; }
+        catch (RuntimeException e) { preparar(model); model.addAttribute("erro", mensagem(e)); return "pages/financeiro/comissoes"; }
     }
 
     @PostMapping("/comissoes/{id}/pagar")

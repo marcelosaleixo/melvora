@@ -52,7 +52,7 @@ public class RetencaoController {
         model.addAttribute("config", config);
         model.addAttribute("oportunidades", oportunidades);
         model.addAttribute("activePage", "retencao");
-        return "pages/retencao";
+        return "pages/comunicacao/retencao";
     }
 
     @GetMapping("/comunicacao/retencao/cliente/{id}/abrir")

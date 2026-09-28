@@ -34,6 +34,6 @@ public class SatisfacaoDashboardController {
         if (fim == null) fim = hoje;
         model.addAttribute("dashboard", service.gerar(inicio, fim));
         model.addAttribute("activePage", "satisfacao");
-        return "pages/satisfacao-dashboard";
+        return "pages/comunicacao/satisfacao-dashboard";
     }
 }

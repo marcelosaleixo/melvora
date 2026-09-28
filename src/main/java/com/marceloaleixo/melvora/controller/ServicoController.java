@@ -38,7 +38,7 @@ public class ServicoController {
         model.addAttribute("servicoForm", new ServicoRequests.WebForm());
         model.addAttribute("profissionais", usuarioRepository.findProfissionaisAtivos(com.marceloaleixo.melvora.tenant.TenantContext.getRequired()));
         model.addAttribute("activePage", "servicos");
-        return "pages/servicos";
+        return "pages/cadastros/servicos";
     }
 
     @PostMapping
@@ -47,7 +47,7 @@ public class ServicoController {
         moduloAcessoService.exigir(ModuloSistema.SERVICOS);
         if (bindingResult.hasErrors()) {
             carregarLista(model, form, 0);
-            return "pages/servicos";
+            return "pages/cadastros/servicos";
         }
         try {
             service.criar(form);
@@ -56,7 +56,7 @@ public class ServicoController {
         } catch (RuntimeException ex) {
             carregarLista(model, form, 0);
             model.addAttribute("erro", mensagem(ex));
-            return "pages/servicos";
+            return "pages/cadastros/servicos";
         }
     }
 
@@ -70,7 +70,7 @@ public class ServicoController {
             model.addAttribute("servicoForm", new ServicoRequests.WebForm(servico));
             model.addAttribute("profissionais", usuarioRepository.findProfissionaisAtivos(com.marceloaleixo.melvora.tenant.TenantContext.getRequired()));
             model.addAttribute("activePage", "servicos");
-            return "pages/servico-editar";
+            return "pages/cadastros/servico-editar";
         } catch (RuntimeException ex) {
             model.addAttribute("erro", mensagem(ex));
             return "redirect:/servicos";
@@ -86,7 +86,7 @@ public class ServicoController {
             model.addAttribute("servico", service.buscar(id));
             model.addAttribute("profissionais", usuarioRepository.findProfissionaisAtivos(com.marceloaleixo.melvora.tenant.TenantContext.getRequired()));
             model.addAttribute("activePage", "servicos");
-            return "pages/servico-editar";
+            return "pages/cadastros/servico-editar";
         }
         try {
             service.atualizar(id, form);
@@ -98,7 +98,7 @@ public class ServicoController {
             model.addAttribute("profissionais", usuarioRepository.findProfissionaisAtivos(com.marceloaleixo.melvora.tenant.TenantContext.getRequired()));
             model.addAttribute("activePage", "servicos");
             model.addAttribute("erro", mensagem(ex));
-            return "pages/servico-editar";
+            return "pages/cadastros/servico-editar";
         }
     }
 

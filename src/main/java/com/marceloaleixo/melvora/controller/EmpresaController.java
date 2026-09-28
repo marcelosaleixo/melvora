@@ -33,7 +33,7 @@ public class EmpresaController {
         if (!model.containsAttribute("empresaForm")) {
             model.addAttribute("empresaForm", new EmpresaRequests.Criar(""));
         }
-        return "pages/empresas";
+        return "pages/administracao/empresas";
     }
 
     @PostMapping("/empresas")
@@ -46,7 +46,7 @@ public class EmpresaController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("pagina", service.listar(PageRequest.of(0, 15,
                     Sort.by("ativa").descending().and(Sort.by("nomeFantasia").ascending()))));
-            return "pages/empresas";
+            return "pages/administracao/empresas";
         }
 
         try {

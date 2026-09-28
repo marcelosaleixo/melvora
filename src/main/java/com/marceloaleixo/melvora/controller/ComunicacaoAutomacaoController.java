@@ -38,7 +38,7 @@ public class ComunicacaoAutomacaoController {
         model.addAttribute("fila", service.fila(empresaId, PageRequest.of(0, 30, Sort.by("dataHoraEnvio").ascending())));
         model.addAttribute("form", new ComunicacaoRequests.ConfigForm(config.isConfirmacaoAtiva(), config.getConfirmacaoMinutosAntes(), config.isLembreteAtivo(), config.getLembreteMinutosAntes(), config.isPosAtendimentoAtivo(), config.getPosAtendimentoMinutosDepois(), config.isRetencaoAtiva(), config.getRetencaoDiasSemRetorno(), config.getRetencaoMensagem(), config.isRetencaoAutomaticaAtiva(), config.getRetencaoCooldownDias(), config.getRetencaoHorarioInicio(), config.getRetencaoHorarioFim(), config.getRetencaoMaxEnviosDia()));
         model.addAttribute("activePage", "automacao");
-        return "pages/comunicacao-automacao";
+        return "pages/comunicacao/comunicacao-automacao";
     }
 
     @PostMapping
@@ -51,7 +51,7 @@ public class ComunicacaoAutomacaoController {
             model.addAttribute("config", service.configuracao(empresaId, empresa));
             model.addAttribute("fila", service.fila(empresaId, PageRequest.of(0, 30, Sort.by("dataHoraEnvio").ascending())));
             model.addAttribute("activePage", "automacao");
-            return "pages/comunicacao-automacao";
+            return "pages/comunicacao/comunicacao-automacao";
         }
         service.salvarConfiguracao(empresaId, form, empresa);
         ra.addFlashAttribute("sucesso", "Automação de comunicação atualizada com sucesso.");

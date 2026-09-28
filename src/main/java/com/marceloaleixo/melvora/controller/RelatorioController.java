@@ -27,6 +27,6 @@ public class RelatorioController {
             model.addAttribute("erro", e.getMessage()==null?"Não foi possível gerar o relatório.":e.getMessage());
         }
         model.addAttribute("inicio",inicio); model.addAttribute("fim",fim); model.addAttribute("modulo", ModuloSistema.RELATORIOS);
-        return "pages/relatorios";
+        return "pages/relatorios/relatorios";
     }
 }

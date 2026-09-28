@@ -21,7 +21,7 @@ public class AvaliacaoAtendimentoController {
         model.addAttribute("avaliacao", avaliacao);
         model.addAttribute("respondida", avaliacao.respondida());
         if (!model.containsAttribute("form")) model.addAttribute("form", new AvaliacaoRequests.WebForm(null, ""));
-        return "pages/avaliacao-atendimento";
+        return "pages/comunicacao/avaliacao-atendimento";
     }
 
     @PostMapping("/avaliacao/{token}")
@@ -33,7 +33,7 @@ public class AvaliacaoAtendimentoController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("avaliacao", service.buscarPublica(token));
             model.addAttribute("respondida", false);
-            return "pages/avaliacao-atendimento";
+            return "pages/comunicacao/avaliacao-atendimento";
         }
         try {
             service.responderPublica(token, form);
@@ -43,7 +43,7 @@ public class AvaliacaoAtendimentoController {
             model.addAttribute("avaliacao", service.buscarPublica(token));
             model.addAttribute("respondida", service.buscarPublica(token).respondida());
             model.addAttribute("erro", ex.getMessage());
-            return "pages/avaliacao-atendimento";
+            return "pages/comunicacao/avaliacao-atendimento";
         }
     }
 }

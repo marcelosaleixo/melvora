@@ -26,7 +26,7 @@ public class TemplateWhatsAppController {
         model.addAttribute("pagina", service.listar(PageRequest.of(Math.max(0, page), 10, Sort.by("nome").ascending())));
         if (!model.containsAttribute("form")) model.addAttribute("form", new TemplateWhatsAppRequests.WebForm("", ""));
         model.addAttribute("activePage", "comunicacao");
-        return "pages/comunicacao-templates";
+        return "pages/comunicacao/comunicacao-templates";
     }
 
     @PostMapping
@@ -36,7 +36,7 @@ public class TemplateWhatsAppController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("pagina", service.listar(PageRequest.of(0, 10, Sort.by("nome").ascending())));
             model.addAttribute("activePage", "comunicacao");
-            return "pages/comunicacao-templates";
+            return "pages/comunicacao/comunicacao-templates";
         }
         try {
             service.criar(form);
@@ -54,7 +54,7 @@ public class TemplateWhatsAppController {
         model.addAttribute("templateId", id);
         model.addAttribute("form", new TemplateWhatsAppRequests.WebForm(template.getNome(), template.getMensagem()));
         model.addAttribute("activePage", "comunicacao");
-        return "pages/comunicacao-template-editar";
+        return "pages/comunicacao/comunicacao-template-editar";
     }
 
     @PostMapping("/{id}/editar")
@@ -65,7 +65,7 @@ public class TemplateWhatsAppController {
         if (bindingResult.hasErrors()) {
             model.addAttribute("templateId", id);
             model.addAttribute("activePage", "comunicacao");
-            return "pages/comunicacao-template-editar";
+            return "pages/comunicacao/comunicacao-template-editar";
         }
         try {
             service.editar(id, form);
@@ -75,7 +75,7 @@ public class TemplateWhatsAppController {
             model.addAttribute("erro", ex.getMessage());
             model.addAttribute("templateId", id);
             model.addAttribute("activePage", "comunicacao");
-            return "pages/comunicacao-template-editar";
+            return "pages/comunicacao/comunicacao-template-editar";
         }
     }
 

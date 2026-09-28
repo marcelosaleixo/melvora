@@ -29,6 +29,6 @@ public class AvaliacoesController {
         model.addAttribute("pagina", service.listar(PageRequest.of(Math.max(0, page), 12, Sort.by("createdAt").descending())));
         model.addAttribute("resumo", service.resumo());
         model.addAttribute("activePage", "comunicacao");
-        return "pages/avaliacoes";
+        return "pages/comunicacao/avaliacoes";
     }
 }

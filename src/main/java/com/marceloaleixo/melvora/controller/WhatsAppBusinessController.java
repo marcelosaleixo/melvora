@@ -42,7 +42,7 @@ public class WhatsAppBusinessController {
                 value(cfg.getN8nBaseUrl()), value(cfg.getN8nWebhookPath()), "",
                 value(cfg.getEvolutionBaseUrl()), "", value(cfg.getEvolutionInstance()),
                 value(cfg.getWuzapiBaseUrl()), "", cfg.isAtiva()));
-        return "pages/whatsapp-business";
+        return "pages/comunicacao/whatsapp-business";
     }
 
     @PostMapping
@@ -55,7 +55,7 @@ public class WhatsAppBusinessController {
         if (result.hasErrors()) {
             var cfg = service.configuracao(empresaId, empresa);
             adicionarModelo(model, cfg, form);
-            return "pages/whatsapp-business";
+            return "pages/comunicacao/whatsapp-business";
         }
         try {
             service.salvarConfiguracao(empresaId, empresa, form);

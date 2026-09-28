@@ -73,7 +73,7 @@ public class WebAgendaController {
                     selecionada.equals(LocalDate.now()) ? LocalDateTime.now().plusHours(1).withSecond(0).withNano(0) : selecionada.atTime(9,0),
                     selecionada.equals(LocalDate.now()) ? LocalDateTime.now().plusHours(2).withSecond(0).withNano(0) : selecionada.atTime(10,0), null));
         }
-        return "pages/agenda";
+        return "pages/agenda/agenda";
     }
 
     @PostMapping("/agenda")
@@ -84,7 +84,7 @@ public class WebAgendaController {
         LocalDate data = form.dataHoraInicio() == null ? LocalDate.now() : form.dataHoraInicio().toLocalDate();
         if (bindingResult.hasErrors()) {
             prepararModelo(model, data);
-            return "pages/agenda";
+            return "pages/agenda/agenda";
         }
         try {
             agendaService.criar(form);
@@ -93,7 +93,7 @@ public class WebAgendaController {
         } catch (RuntimeException ex) {
             prepararModelo(model, data);
             model.addAttribute("erro", mensagemSegura(ex));
-            return "pages/agenda";
+            return "pages/agenda/agenda";
         }
     }
 
@@ -117,7 +117,7 @@ public class WebAgendaController {
             boolean servicosAtivo = moduloAcessoService.possui(ModuloSistema.SERVICOS);
             model.addAttribute("servicosAtivo", servicosAtivo);
             model.addAttribute("servicos", servicosAtivo ? servicoService.listarAtivos() : java.util.List.of());
-            return "pages/agenda-editar";
+            return "pages/agenda/agenda-editar";
         } catch (RuntimeException ex) {
             model.addAttribute("erro", mensagemSegura(ex));
             return "redirect:/agenda";
@@ -136,7 +136,7 @@ public class WebAgendaController {
             boolean servicosAtivo = moduloAcessoService.possui(ModuloSistema.SERVICOS);
             model.addAttribute("servicosAtivo", servicosAtivo);
             model.addAttribute("servicos", servicosAtivo ? servicoService.listarAtivos() : java.util.List.of());
-            return "pages/agenda-editar";
+            return "pages/agenda/agenda-editar";
         }
         try {
             var atualizado = agendaService.reagendar(id, form);
@@ -149,7 +149,7 @@ public class WebAgendaController {
             model.addAttribute("servicosAtivo", servicosAtivo);
             model.addAttribute("servicos", servicosAtivo ? servicoService.listarAtivos() : java.util.List.of());
             model.addAttribute("erro", mensagemSegura(ex));
-            return "pages/agenda-editar";
+            return "pages/agenda/agenda-editar";
         }
     }
 

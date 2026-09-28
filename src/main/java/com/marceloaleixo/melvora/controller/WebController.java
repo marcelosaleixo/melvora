@@ -23,6 +23,6 @@ public class WebController {
     @GetMapping("/dashboard")
     public String dashboard(Authentication authentication, Model model) {
         model.addAttribute("dashboard", dashboardService.carregar(authentication.getName()));
-        return "pages/dashboard";
+        return "pages/geral/dashboard";
     }
 }

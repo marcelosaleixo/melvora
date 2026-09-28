@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: head('CRM 360° da cliente')}"></head>
+<body>
+<th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar crm-topbar">
+  <div>
+    <span class="eyebrow">CRM 360°</span>
+    <h1 th:text="${cliente.nome}">Cliente</h1>
+    <p>Uma visão única da jornada, relacionamento, agenda e valor da cliente.</p>
+  </div>
+  <div class="table-actions">
+    <a class="secondary-button" th:href="${'/clientes/' + cliente.id}">Ficha da cliente</a>
+    <a class="primary-button" th:href="${'/clientes/' + cliente.id + '/editar'}">Editar cadastro</a>
+  </div>
+</header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+
+<section class="crm-hero panel">
+  <div class="crm-avatar" th:text="${#strings.substring(cliente.nome,0,1).toUpperCase()}">M</div>
+  <div class="crm-hero-copy">
+    <span class="section-kicker">PERFIL</span>
+    <h2 th:text="${cliente.nome}">Cliente</h2>
+    <p th:text="${(cliente.telefone ?: 'Sem telefone') + ' · ' + (cliente.email ?: 'Sem e-mail')}">Contato</p>
+  </div>
+  <div class="crm-tags">
+    <span class="status-badge success" th:if="${cliente.ativo}">Cliente ativa</span>
+    <span class="status-badge muted" th:unless="${cliente.ativo}">Cliente inativa</span>
+  </div>
+</section>
+
+<section class="crm-kpi-grid">
+  <article class="crm-kpi"><span>Atendimentos</span><strong th:text="${crm.totalAtendimentos}">0</strong><small th:text="${crm.atendimentosConcluidos + ' concluído(s)'}">0 concluído(s)</small></article>
+  <article class="crm-kpi"><span>Próximo atendimento</span><strong th:if="${crm.proximoAtendimento != null}" th:text="${#temporals.format(crm.proximoAtendimento.dataHoraInicio,'dd/MM HH:mm')}">—</strong><strong class="muted" th:unless="${crm.proximoAtendimento != null}">Nenhum</strong><small th:if="${crm.proximoAtendimento != null}" th:text="${crm.proximoAtendimento.profissional.nome}">Profissional</small><small th:unless="${crm.proximoAtendimento != null}">Sem agendamento futuro</small></article>
+  <article class="crm-kpi"><span>Último atendimento</span><strong th:if="${crm.ultimoAgendamento != null}" th:text="${#temporals.format(crm.ultimoAgendamento.dataHoraInicio,'dd/MM/yyyy')}">—</strong><strong class="muted" th:unless="${crm.ultimoAgendamento != null}">Nenhum</strong><small th:if="${crm.ultimoAgendamento != null}" th:text="${crm.ultimoAgendamento.profissional.nome}">Profissional</small><small th:unless="${crm.ultimoAgendamento != null}">Ainda sem histórico</small></article>
+  <article class="crm-kpi" th:if="${financeiroAtivo}"><span>Receita paga</span><strong th:text="${'R$ ' + #numbers.formatDecimal(crm.totalReceitasPagas ?: 0,1,2)}">R$ 0,00</strong><small th:text="${crm.quantidadeReceitasPagas + ' lançamento(s) pago(s)'}">0 lançamentos</small></article>
+  <article class="crm-kpi" th:if="${comunicacaoAtiva}"><span>Satisfação</span><strong th:text="${crm.avaliacoesRespondidas > 0 ? #numbers.formatDecimal(crm.mediaAvaliacao,1,1) + ' ★' : '—'}">—</strong><small th:text="${crm.avaliacoesRespondidas + ' avaliação(ões)'}">0 avaliações</small></article>
+</section>
+
+<div class="crm-grid">
+<section class="panel">
+  <div class="panel-heading"><div><span class="section-kicker">JORNADA</span><h2>Atendimentos recentes</h2><p class="section-note">Histórico operacional consolidado.</p></div></div>
+  <div class="table-wrap" th:if="${!crm.atendimentosRecentes.isEmpty()}">
+    <table><thead><tr><th>Data</th><th>Serviço</th><th>Profissional</th><th>Valor</th></tr></thead>
+      <tbody><tr th:each="a : ${crm.atendimentosRecentes}">
+        <td th:text="${#temporals.format(a.dataHoraInicio,'dd/MM/yyyy HH:mm')}">01/01/2026</td>
+        <td th:text="${a.servicoNome ?: a.tipo}">Serviço</td>
+        <td th:text="${a.profissional.nome}">Profissional</td>
+        <td th:text="${'R$ ' + #numbers.formatDecimal(a.valorCobrado,1,2)}">R$ 0,00</td>
+      </tr></tbody>
+    </table>
+  </div>
+  <div class="empty-state" th:if="${crm.atendimentosRecentes.isEmpty()}">Ainda não existem atendimentos concluídos para esta cliente.</div>
+</section>
+
+<section class="panel" th:if="${financeiroAtivo}">
+  <div class="panel-heading"><div><span class="section-kicker">VALOR</span><h2>Relacionamento financeiro</h2><p class="section-note">Somente receitas efetivamente pagas.</p></div><a class="secondary-button" href="/financeiro">Abrir financeiro</a></div>
+  <div class="crm-mini-grid"><div><span>Receita acumulada paga</span><strong th:text="${'R$ ' + #numbers.formatDecimal(crm.totalReceitasPagas ?: 0,1,2)}">R$ 0,00</strong></div><div><span>Lançamentos pagos</span><strong th:text="${crm.quantidadeReceitasPagas}">0</strong></div></div>
+</section>
+
+<section class="panel" th:if="${comunicacaoAtiva}">
+  <div class="panel-heading"><div><span class="section-kicker">RELACIONAMENTO</span><h2>WhatsApp</h2><p class="section-note">Última interação e estado do contato.</p></div><a class="secondary-button" th:href="${'/comunicacao/conversas/' + cliente.id}">Abrir conversa</a></div>
+  <div class="crm-communication">
+    <div class="crm-message-box"><span>Última mensagem</span><strong th:if="${crm.ultimaMensagemTexto != null}" th:text="${crm.ultimaMensagemTexto}">Mensagem</strong><strong class="muted" th:unless="${crm.ultimaMensagemTexto != null}">Nenhuma mensagem registrada.</strong><small th:if="${crm.ultimaMensagem != null}" th:text="${#temporals.format(crm.ultimaMensagem,'dd/MM/yyyy HH:mm')}">—</small></div>
+    <div class="crm-comm-stats"><div><span>Não lidas</span><strong th:text="${crm.mensagensNaoLidas}">0</strong></div><div><span>Retenção</span><strong th:text="${crm.retencaoOptOut ? 'Opt-out' : (crm.retencaoOptIn ? 'Autorizada' : 'Não definida')}">Não definida</strong></div></div>
+  </div>
+</section>
+
+<section class="panel" th:if="${comunicacaoAtiva}">
+  <div class="panel-heading"><div><span class="section-kicker">SATISFAÇÃO</span><h2>Feedback da cliente</h2></div><a class="secondary-button" href="/comunicacao/avaliacoes/dashboard">Ver indicadores</a></div>
+  <div class="crm-rating-card"><strong th:text="${crm.avaliacoesRespondidas > 0 ? #numbers.formatDecimal(crm.mediaAvaliacao,1,1) + ' ★' : 'Sem avaliações'}">Sem avaliações</strong><span th:text="${crm.avaliacoesRespondidas + ' avaliação(ões) respondida(s)'}">0 avaliações</span></div>
+</section>
+</div>
+
+<section class="panel">
+  <div class="panel-heading"><div><span class="section-kicker">AÇÕES</span><h2>Próximos passos</h2><p class="section-note">Atalhos para continuar o relacionamento.</p></div></div>
+  <div class="crm-actions">
+    <a class="primary-button" th:if="${agendaAtiva}" th:href="${'/agenda?clienteId=' + cliente.id}">+ Agendar atendimento</a>
+    <a class="secondary-button" th:if="${comunicacaoAtiva}" th:href="${'/comunicacao/retencao/cliente/' + cliente.id + '/abrir'}">Enviar convite de retorno</a>
+    <a class="secondary-button" th:if="${historicoAtivo}" th:href="${'/clientes/' + cliente.id}">Ver histórico Mega Hair</a>
+  </div>
+</section>
+</main>
+</th:block>
+</body>
+</html>

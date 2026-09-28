@@ -58,7 +58,7 @@ public class ComunicacaoController {
         model.addAttribute("clientes", clientes);
         model.addAttribute("templates", templateWhatsAppService.ativos());
         model.addAttribute("activePage", "comunicacao");
-        return "pages/comunicacao";
+        return "pages/comunicacao/comunicacao";
     }
 
     @GetMapping("/comunicacao/whatsapp/cliente/{id}")

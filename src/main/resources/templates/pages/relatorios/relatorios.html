@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/head :: head('Relatórios')}"></head>
+<body><th:block th:replace="~{fragments/layout :: layout(~{::main})}">
+<main class="main-content">
+<header class="topbar">
+  <div><span class="eyebrow">GESTÃO</span><h1>Relatórios gerenciais</h1><p>Indicadores financeiros e operacionais da sua empresa.</p></div>
+</header>
+<th:block th:replace="~{fragments/feedback :: messages}"></th:block>
+<div class="panel report-filter">
+  <div class="panel-heading"><div><span class="section-kicker">PERÍODO</span><h2>Selecione o intervalo</h2></div></div>
+  <form class="form-grid" method="get" th:action="@{/relatorios}">
+    <div class="field"><label for="inicio">Data inicial</label><input id="inicio" name="inicio" type="date" th:value="${inicio}" required></div>
+    <div class="field"><label for="fim">Data final</label><input id="fim" name="fim" type="date" th:value="${fim}" required></div>
+    <div class="form-actions"><button class="primary-button" type="submit">Atualizar relatório</button></div>
+  </form>
+</div>
+<div class="module-warning" th:if="${erro != null}"><strong>Não foi possível gerar o relatório</strong><p th:text="${erro}">Erro</p></div>
+<th:block th:if="${relatorio != null}">
+<section class="report-kpi-grid">
+  <article class="report-kpi"><span>Receitas pagas</span><strong th:text="${'R$ ' + #numbers.formatDecimal(relatorio.receitasPagas,1,2)}">R$ 0,00</strong><small>Valores recebidos no período.</small></article>
+  <article class="report-kpi"><span>Despesas pagas</span><strong class="danger" th:text="${'R$ ' + #numbers.formatDecimal(relatorio.despesasPagas,1,2)}">R$ 0,00</strong><small>Saídas efetivamente pagas.</small></article>
+  <article class="report-kpi"><span>Comissões pagas</span><strong th:text="${'R$ ' + #numbers.formatDecimal(relatorio.comissoesPagas,1,2)}">R$ 0,00</strong><small>Comissões liquidadas no período.</small></article>
+  <article class="report-kpi"><span>Saldo operacional</span><strong th:classappend="${relatorio.saldo.signum() >= 0 ? ' positive' : ' danger'}" th:text="${'R$ ' + #numbers.formatDecimal(relatorio.saldo,1,2)}">R$ 0,00</strong><small>Receitas − despesas − comissões.</small></article>
+  <article class="report-kpi"><span>Atendimentos</span><strong th:text="${relatorio.atendimentos}">0</strong><small>Registros realizados no período.</small></article>
+  <article class="report-kpi"><span>Clientes atendidos</span><strong th:text="${relatorio.clientesAtendidos}">0</strong><small>Clientes únicos atendidos.</small></article>
+</section>
+<section class="report-grid">
+  <article class="panel"><div class="panel-heading"><div><span class="section-kicker">DESEMPENHO</span><h2>Serviços mais realizados</h2></div></div>
+    <div class="report-list" th:if="${!relatorio.servicosMaisRealizados.isEmpty()}"><div class="report-row" th:each="item,stat : ${relatorio.servicosMaisRealizados}"><div class="report-row-main"><strong th:text="${item.nome}">Serviço</strong><span th:text="${item.quantidade + ' atendimento(s)'}">0 atendimento(s)</span></div><div class="report-row-value" th:text="${'R$ ' + #numbers.formatDecimal(item.valor,1,2)}">R$ 0,00</div></div></div>
+    <div class="empty-state" th:if="${relatorio.servicosMaisRealizados.isEmpty()}">Nenhum atendimento no período.</div>
+  </article>
+  <article class="panel"><div class="panel-heading"><div><span class="section-kicker">EQUIPE</span><h2>Faturamento por profissional</h2></div></div>
+    <div class="report-list" th:if="${!relatorio.profissionaisPorFaturamento.isEmpty()}"><div class="report-row" th:each="item : ${relatorio.profissionaisPorFaturamento}"><div class="report-row-main"><strong th:text="${item.nome}">Profissional</strong><span th:text="${item.quantidade + ' atendimento(s)'}">0 atendimento(s)</span></div><div class="report-row-value" th:text="${'R$ ' + #numbers.formatDecimal(item.valor,1,2)}">R$ 0,00</div></div></div>
+    <div class="empty-state" th:if="${relatorio.profissionaisPorFaturamento.isEmpty()}">Nenhum atendimento no período.</div>
+  </article>
+</section>
+<section class="info-grid"><div class="info-card"><span>Comissões</span><strong th:text="${'R$ ' + #numbers.formatDecimal(relatorio.comissoesPendentes,1,2) + ' pendentes'}">R$ 0,00 pendentes</strong><p>Valor de comissões geradas, mas ainda não liquidadas.</p></div><div class="info-card"><span>Período analisado</span><strong th:text="${#temporals.format(relatorio.inicio,'dd/MM/yyyy') + ' até ' + #temporals.format(relatorio.fim,'dd/MM/yyyy')}">01/01/2026 até 31/01/2026</strong><p>Use períodos de até 366 dias para manter a consulta rápida.</p></div><div class="info-card"><span>Segurança</span><strong>Dados do tenant atual</strong><p>Todos os indicadores são calculados exclusivamente para a empresa autenticada.</p></div></section>
+</th:block>
+<footer class="footer"><span>Melvora © 2026</span><span>Relatórios gerenciais</span></footer>
+</main></th:block></body></html>

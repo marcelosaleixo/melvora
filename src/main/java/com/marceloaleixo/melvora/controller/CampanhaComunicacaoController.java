@@ -29,7 +29,7 @@ public class CampanhaComunicacaoController {
         model.addAttribute("servicos",servicoRepository.findAtivosByEmpresaId(empresaId));
         model.addAttribute("segmentos",CampanhaComunicacao.Segmento.values());
         model.addAttribute("activePage","campanhas");
-        return "pages/campanhas-comunicacao";
+        return "pages/comunicacao/campanhas-comunicacao";
     }
 
     @PostMapping
