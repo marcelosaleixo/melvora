@@ -3,17 +3,17 @@
 ## 1. Aplicação
 
 - Tipo: Dockerfile
-- Porta: `8080`
+- Porta: `8086`
 - Health check sugerido: `GET /login`
 - Domínio: apontar para a aplicação e habilitar HTTPS.
 
 ## 2. Variáveis obrigatórias
 
 ```env
-SERVER_PORT=8080
-DB_URL=jdbc:postgresql://SEU_POSTGRES:5432/melvora?sslmode=disable
+SERVER_PORT=8086
+DB_URL=jdbc:postgresql://72.60.59.55:5432/melvora?sslmode=disable
 DB_USERNAME=postgres
-DB_PASSWORD=SENHA_FORTE
+DB_PASSWORD=@aleixoPr0
 COOKIE_SECURE=true
 THYMELEAF_CACHE=true
 MELVORA_SECRET_KEY=CHAVE_BASE64_32_BYTES
