@@ -25,11 +25,11 @@ FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 ENV TZ=America/Cuiaba
-ENV SERVER_PORT=8080
+ENV SERVER_PORT=8086
 ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75 -XX:+ExitOnOutOfMemoryError"
 
 COPY --from=build /app/target/*.jar /app/melvora.jar
 
-EXPOSE 8080
+EXPOSE 8086
 
 ENTRYPOINT ["java", "-jar", "/app/melvora.jar"]
